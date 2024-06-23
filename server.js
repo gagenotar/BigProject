@@ -36,6 +36,37 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  const { login, password } = req.body;
+
+  try {
+    const db = client.db('JourneyJournal');
+    const user = await db.collection('Users').findOne({ login, password });
+    if (user) {
+      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+// Register endpoint
+app.post('/api/register', async (req, res) => {
+  const { login, password, firstName, lastName } = req.body;
+  const newUser = { login, password, firstName, lastName };
+
+  try {
+    const db = client.db('JourneyJournal');
+    const result = await db.collection('Users').insertOne(newUser);
+    res.status(201).json(result.ops[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
 // Add Trip endpoint
 app.post('/api/addtrip', async (req, res) => {
   const { userId, title, description, startDate, endDate, locations } = req.body;
@@ -63,20 +94,6 @@ app.delete('/api/deletetrip/:id', async (req, res) => {
   }
 });
 
-// Register endpoint
-app.post('/api/register', async (req, res) => {
-  const { login, password, firstName, lastName } = req.body;
-  const newUser = { login, password, firstName, lastName };
-
-  try {
-    const db = client.db('JourneyJournal');
-    const result = await db.collection('Users').insertOne(newUser);
-    res.status(201).json(result.ops[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
 // Search Trip endpoint
 app.post('/api/searchtrips', async (req, res) => {
   const { search } = req.body;
@@ -85,23 +102,6 @@ app.post('/api/searchtrips', async (req, res) => {
     const db = client.db('JourneyJournal');
     const results = await db.collection('Trips').find({ title: { $regex: search, $options: 'i' } }).toArray();
     res.status(200).json(results);
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-// Login endpoint
-app.post('/api/login', async (req, res) => {
-  const { login, password } = req.body;
-
-  try {
-    const db = client.db('JourneyJournal');
-    const user = await db.collection('Users').findOne({ login, password });
-    if (user) {
-      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
-    }
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
