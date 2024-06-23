@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(url);
 
 // Connect to MongoDB
 client.connect().catch(err => {
@@ -17,6 +17,7 @@ client.connect().catch(err => {
 });
 
 // Middleware setup
+app.set('port', (process.env.PORT || 5001))
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -105,6 +106,10 @@ app.post('/api/searchtrips', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
+});
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
 });
 
 // Start the server
