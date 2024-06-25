@@ -1,24 +1,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path');
-const { MongoClient, ObjectId } = require('mongodb');
-require('dotenv').config();
 
-const app = express();
+const path = require('path');
 const PORT = process.env.PORT || 5001;
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Middleware setup
+const app = express();
+app.set('port', (process.env.PORT || 5001))
+app.use(cors());
+app.use(bodyParser.json());
 
 // Connect to MongoDB
+require('dotenv').config();
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const { MongoClient, ObjectId } = require('mongodb');
+const client = new MongoClient(url);
 client.connect().catch(err => {
   console.error('Failed to connect to MongoDB', err);
   process.exit(1);
 });
-
-// Middleware setup
-app.use(cors());
-app.use(bodyParser.json());
 
 // CORS setup
 app.use((req, res, next) => {
@@ -36,75 +37,194 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Add Trip endpoint
-app.post('/api/addtrip', async (req, res) => {
-  const { userId, title, description, startDate, endDate, locations } = req.body;
-  const newTrip = { userId, title, description, startDate, endDate, locations };
+/* 
+Login endpoint 
+
+Request
+{
+  login: String
+  password: String
+}
+Response
+{
+  id: _id
+  firstName: String
+  lastName: String
+}
+*/
+app.post('/api/login', async (req, res) => {
+  const { login, password } = req.body;
 
   try {
-    const db = client.db('JourneyJournal');
-    const result = await db.collection('Trips').insertOne(newTrip);
-    res.status(201).json(result.ops[0]);
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({ login, password });
+    if (user) {
+      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
+    } else {
+      res.status(404).json({ error: 'Invalid credentials' });
+    }
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
 
-// Delete Trip endpoint
-app.delete('/api/deletetrip/:id', async (req, res) => {
-  const { id } = req.params;
+/* 
+Register endpoint 
 
-  try {
-    const db = client.db('JourneyJournal');
-    await db.collection('Trips').deleteOne({ _id: new ObjectId(id) });
-    res.status(200).json({ message: 'Trip deleted' });
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
+Request body
+{
+  login: String
+  password: String
+  firstName: String
+  lastName: String
+}
 
-// Register endpoint
+Response
+{
+  _id: new id
+  login: username
+}
+*/
 app.post('/api/register', async (req, res) => {
   const { login, password, firstName, lastName } = req.body;
   const newUser = { login, password, firstName, lastName };
 
   try {
-    const db = client.db('JourneyJournal');
-    const result = await db.collection('Users').insertOne(newUser);
-    res.status(201).json(result.ops[0]);
+    const db = client.db('journeyJournal');
+    const result = await db.collection('user').insertOne(newUser);
+    res.status(200).json({_id: result.insertedId, login: login});
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
 
-// Search Trip endpoint
-app.post('/api/searchtrips', async (req, res) => {
+/* 
+Add entry endpoint 
+
+Request body
+{
+  userId: _id
+  title: String
+  description: String
+  location: String
+}
+
+Response
+{
+  _id: new id
+}
+*/
+app.post('/api/addEntry', async (req, res) => {
+  const { userId, title, description, location} = req.body;
+  const newTrip = { userId, title, description, location};
+
+  try {
+    const db = client.db('journeyJournal');
+    const result = await db.collection('journalEntry').insertOne(newTrip);
+    res.status(200).json({ _id: result.insertedId });
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+/* 
+Delete entry endpoint 
+
+example DEL URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
+
+Request body
+{
+  N/A
+}
+
+Response
+simple message
+*/
+app.delete('/api/deleteEntry/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const db = client.db('journeyJournal');
+    const result = await db.collection('journalEntry').deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+      res.status(200).send('Entry deleted successfully');
+    } else {
+      res.status(404).send('Entry not found');
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+/* 
+Edit entry endpoint 
+
+example PUT URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
+
+Request body
+{
+  any info to update
+}
+
+Response
+{
+  updated entry
+}
+*/
+app.put('/api/editEntry/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = client.db('journeyJournal');
+
+    const filter = { _id: new ObjectId(id) };
+    const update = { $set: req.body };
+
+    const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
+    if (!result) {
+      return res.status(404).send('Entry not found');
+    }
+
+    const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+
+    res.status(200).json(newResult);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+/* 
+Search entry endpoint 
+
+Request
+search: String
+
+Response
+resuts[]
+*/
+app.post('/api/searchEntry', async (req, res) => {
   const { search } = req.body;
 
   try {
-    const db = client.db('JourneyJournal');
-    const results = await db.collection('Trips').find({ title: { $regex: search, $options: 'i' } }).toArray();
+    const db = client.db('journeyJournal');
+    const results = await db.collection('journalEntry').find({ title: { $regex: search, $options: 'i' } }).toArray();
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
 
-// Login endpoint
-app.post('/api/login', async (req, res) => {
-  const { login, password } = req.body;
+/* 
+Get endpoint (for connection testing)
 
-  try {
-    const db = client.db('JourneyJournal');
-    const user = await db.collection('Users').findOne({ login, password });
-    if (user) {
-      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
-    }
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
+Request
+none
+
+Response
+'Hello World!'
+*/
+app.get('/', (req, res) => {
+  res.json({message: 'Hello World!'});
 });
 
 // Start the server
