@@ -1,0 +1,62 @@
+#signup-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#register-div {
+  max-width: 40vw;
+  min-width: 300px;
+  margin: auto;
+  padding: 5vh;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.70);
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+}
+
+#brand-name-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#brand-name {
+  margin: none;
+  color: #0C274E;
+  font-family: Anton;
+}
+
+#subtitle p {
+  color: #2B2B2B;
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: bold;
+}
+
+#register-form input {
+  font-family: 'Inter';
+}
+
+#register-form button {
+  width: 100%;
+}
+
+#login-redirect {
+  color: #2B2B2B;
+  font-family: 'Inter';
+  text-align: center;
+  font-style: normal;
+  font-weight: bold;
+}
+
+#login-redirect p {
+  display: inline;
+}
+
+#login-redirect a {
+  text-decoration: none;
+  display: inline;
+}
