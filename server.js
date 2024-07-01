@@ -44,24 +44,25 @@ Login endpoint
 
 Request
 {
-  login: String
+  email: String
   password: String
 }
 Response
 {
   id: _id
+  login: String
   firstName: String
   lastName: String
 }
 */
 app.post('/api/login', async (req, res) => {
-  const { login, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({ login, password });
+    const user = await db.collection('user').findOne({ email, password });
     if (user) {
-      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
+      res.status(200).json({ id: user._id, login: user.login, firstName: user.firstName, lastName: user.lastName });
     } else {
       res.status(404).json({ error: 'Invalid credentials' });
     }

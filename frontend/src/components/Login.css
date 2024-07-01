@@ -1,0 +1,74 @@
+#login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#login-div {
+  max-width: 40vw;
+  min-width: 300px;
+  margin: auto;
+  padding: 5vh;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.70);
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+}
+
+#brand-name-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#brand-name {
+  margin: none;
+  color: #0C274E;
+  font-family: Anton;
+}
+
+#subtitle p {
+  color: #2B2B2B;
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: bold;
+}
+
+#login-form input {
+  font-family: 'Inter';
+}
+
+#forgot-pass-redirect {
+    color: #2B2B2B;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: bold;
+}
+
+#forgot-pass-redirect a {
+    text-decoration: none;
+    display: inline;
+}
+
+#login-btn {
+  width: 100%;
+}
+
+#signup-redirect {
+  color: #2B2B2B;
+  font-family: 'Inter';
+  text-align: center;
+  font-style: normal;
+  font-weight: bold;
+}
+
+#signup-redirect p {
+  display: inline;
+}
+
+#signup-redirect a {
+  text-decoration: none;
+  display: inline;
+}
