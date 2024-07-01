@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 // Connect to MongoDB
 require('dotenv').config();
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const url = process.env.MONGODB_URI;
 const { MongoClient, ObjectId } = require('mongodb');
 const client = new MongoClient(url);
 client.connect().catch(err => {
@@ -28,14 +28,6 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   next();
 });
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
 
 /* 
 Login endpoint 
@@ -232,3 +224,11 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('frontend/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}

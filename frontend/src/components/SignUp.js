@@ -3,6 +3,19 @@ import "./SignUp.css";
 
 const SignUp = () => {
 
+    const app_name = 'journey-journal-cop4331-71e6a1fdae61'
+    function buildPath(route)
+    {
+        if (process.env.NODE_ENV === 'production') 
+        {
+            return 'https://' + app_name +  '.herokuapp.com/' + route;
+        }
+        else
+        {        
+            return 'http://localhost:5001/' + route;
+        }
+    }
+
   var signUpFirstName;
   var signUpLastName;
   var signUpEmail;
@@ -27,7 +40,7 @@ const SignUp = () => {
 
         try
         {
-            const response = await fetch(('http://localhost:5001/api/register'),
+            const response = await fetch((buildPath('api/register')),
                 {
                     method: 'POST',
                     body: js,
