@@ -29,8 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the 'frontend/public' directory
-app.use(express.static(path.join(__dirname, 'frontend/public')));
+// Serve static files from the 'frontend/build' directory in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  // Wildcard route to serve index.html for all non-API requests
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
 
 /* 
 Login endpoint 
@@ -231,11 +238,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
