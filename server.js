@@ -29,6 +29,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static files from the 'frontend/public' directory
+app.use(express.static(path.join(__dirname, 'frontend/public')));
+
 /* 
 Login endpoint 
 
@@ -207,17 +210,21 @@ app.post('/api/searchEntry', async (req, res) => {
   }
 });
 
-/* 
-Get endpoint (for connection testing)
+// /* 
+// Get endpoint (for connection testing)
 
-Request
-none
+// Request
+// none
 
-Response
-'Hello World!'
-*/
-app.get('/', (req, res) => {
-  res.json({message: 'Hello World!'});
+// Response
+// 'Hello World!'
+// */
+// app.get('/', (req, res) => {
+//   res.json({message: 'Hello World!'});
+// });
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/public', 'index.html'));
 });
 
 // Start the server
