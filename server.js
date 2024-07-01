@@ -29,6 +29,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static files from the 'frontend/build' directory in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  // Wildcard route to serve index.html for all non-API requests
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
+
 /* 
 Login endpoint 
 
@@ -207,28 +217,24 @@ app.post('/api/searchEntry', async (req, res) => {
   }
 });
 
-/* 
-Get endpoint (for connection testing)
+// /* 
+// Get endpoint (for connection testing)
 
-Request
-none
+// Request
+// none
 
-Response
-'Hello World!'
-*/
-app.get('/', (req, res) => {
-  res.json({message: 'Hello World!'});
+// Response
+// 'Hello World!'
+// */
+// app.get('/', (req, res) => {
+//   res.json({message: 'Hello World!'});
+// });
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/public', 'index.html'));
 });
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
