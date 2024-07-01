@@ -1,18 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./SignUp.css";
 
 const SignUp = () => {
 
-    const app_name = 'journey-journal-cop4331-71e6a1fdae61'
-    function buildPath(route)
-    {
-        if (process.env.NODE_ENV === 'production') 
-        {
-            return 'https://' + app_name +  '.herokuapp.com/' + route;
-        }
-        else
-        {        
+    const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+    const navigate = useNavigate();
+
+    function buildPathAPI(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
             return 'http://localhost:5001/' + route;
+        }
+    }
+
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:3000/' + route;
         }
     }
 
@@ -40,7 +47,7 @@ const SignUp = () => {
 
         try
         {
-            const response = await fetch((buildPath('api/register')),
+            const response = await fetch((buildPathAPI('api/register')),
                 {
                     method: 'POST',
                     body: js,
@@ -62,26 +69,16 @@ const SignUp = () => {
         }
 
         alert('doIt() ' + signUpLogin.value + ' ' + signUpPassword.value );
+        redirectTo('email-verification');
     };
 
-  
+    const redirectTo = (route) => {
+        const path = buildPath(route);
+        window.location.href = path;
+    };
+
   return (
     <div id='signup-component'>
-        {/* <span id="inner-title">PLEASE LOG IN</span><br />
-        <input type="text" id="signUpFirstName" placeholder="First Name" 
-        ref={(c) => signUpFirstName = c} /><br />
-        <input type="text" id="signUpLastName" placeholder="Last Name" 
-        ref={(c) => signUpLastName = c} /><br />
-        <input type="text" id="signUpEmail" placeholder="Email Address" 
-        ref={(c) => signUpEmail = c} /><br />
-        <input type="text" id="signUpLogin" placeholder="Username" 
-        ref={(c) => signUpLogin = c} /><br />
-        <input type="password" id="signUpPassword" placeholder="Password" 
-        ref={(c) => signUpPassword = c} /><br />
-        <input type="submit" id="signUpButton" className="buttons" value = "Do It"
-            onClick={doSignUp} />
-        <span id="signUpResult">{message}</span> */}
-
         <div id='register-div'>
             <div className='container-sm text-center'>
                 <div className='row justify-content-center'>
@@ -119,59 +116,12 @@ const SignUp = () => {
                 </form>
                 <div className='row justify-content-center'>
                     <div className='col-sm'>
-                        <span class="link-opacity-75-hover" id='login-redirect'><p>Have an account? </p><a href=''>Login.</a></span>
+                        <span class="link-opacity-75-hover" id='login-redirect'><p>Have an account? </p><a href='#' onClick={() => redirectTo('')}>Log in.</a></span>
                     </div>
                 </div>
             </div>
         </div>
         <span id="signUpResult">{message}</span>
-
-        {/* <div className='container'>
-            <form class="row g-3">
-                <div class="col-md-3">
-                    <label for="inputEmail4" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4"/>
-                </div>
-                <div class="col-md-3">
-                    <label for="inputPassword4" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="inputPassword4"/>
-                </div>
-                <div class="col-6">
-                    <label for="inputAddress" class="form-label">Address</label>
-                    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
-                </div>
-                <div class="col-6">
-                    <label for="inputAddress2" class="form-label">Address 2</label>
-                    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor"/>
-                </div>
-                <div class="col-md-3">
-                    <label for="inputCity" class="form-label">City</label>
-                    <input type="text" class="form-control" id="inputCity"/>
-                </div>
-                <div class="col-md-2">
-                    <label for="inputState" class="form-label">State</label>
-                    <select id="inputState" class="form-select">
-                    <option selected>Choose...</option>
-                    <option>...</option>
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <label for="inputZip" class="form-label">Zip</label>
-                    <input type="text" class="form-control" id="inputZip"/>
-                </div>
-                <div class="col-6">
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="gridCheck"/>
-                    <label class="form-check-label" for="gridCheck">
-                        Check me out
-                    </label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <button type="submit" class="btn btn-primary">Sign in</button>
-                </div>
-            </form>
-        </div> */}
     </div>
   );
 };
