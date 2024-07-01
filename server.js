@@ -73,10 +73,11 @@ Register endpoint
 
 Request body
 {
-  login: String
-  password: String
   firstName: String
   lastName: String
+  email: String
+  login: String
+  password: String
 }
 
 Response
@@ -86,8 +87,8 @@ Response
 }
 */
 app.post('/api/register', async (req, res) => {
-  const { login, password, firstName, lastName } = req.body;
-  const newUser = { login, password, firstName, lastName };
+  const { firstName, lastName, email, login, password } = req.body;
+  const newUser = { firstName, lastName, email, login, password};
 
   try {
     const db = client.db('journeyJournal');
