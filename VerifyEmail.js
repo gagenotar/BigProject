@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import './VerifyEmail.css';
 
 const VerifyEmail = () => {
   const [message, setMessage] = useState('');
   const query = new URLSearchParams(useLocation().search);
-  const history = useHistory(); // Use useHistory hook for redirection
 
   useEffect(() => {
     const token = query.get('token');
@@ -15,7 +14,9 @@ const VerifyEmail = () => {
         .then(data => {
           if (data.message) {
             setMessage(data.message);
-            history.push('/home'); // Redirect to home screen on successful verification
+            setTimeout(() => {
+              window.location.href = '/home'; // Redirect to home screen after a delay
+            }, 2000); // Adjust the delay as needed
           } else {
             setMessage('Email verification failed. Invalid token.');
           }
@@ -24,7 +25,7 @@ const VerifyEmail = () => {
           setMessage('Email verification failed.');
         });
     }
-  }, [query, history]);
+  }, [query]);
 
   return (
     <div className="verify-email-container">
@@ -35,3 +36,4 @@ const VerifyEmail = () => {
 };
 
 export default VerifyEmail;
+
