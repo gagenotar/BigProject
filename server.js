@@ -1,21 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 const path = require('path');
-const PORT = process.env.PORT || 5001;
+const { MongoClient, ObjectId } = require('mongodb');
+const crypto = require('crypto');
+const transporter = require('./mailer');
+require('dotenv').config();
 
-// Middleware setup
 const app = express();
-app.set('port', (process.env.PORT || 5001))
+const PORT = process.env.PORT || 5001;
+app.set('port', PORT);
 app.use(cors());
 app.use(bodyParser.json());
 
-// Connect to MongoDB
-require('dotenv').config();
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const { MongoClient, ObjectId } = require('mongodb');
-const client = new MongoClient(url);
+const url = process.env.MONGODB_URI;  // Using environment variable for MongoDB URI
+const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect().catch(err => {
   console.error('Failed to connect to MongoDB', err);
   process.exit(1);
@@ -37,21 +36,62 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-/* 
-Login endpoint 
+// Generate a verification token
+const generateToken = () => {
+  return crypto.randomBytes(32).toString('hex');
+};
 
-Request
-{
-  login: String
-  password: String
-}
-Response
-{
-  id: _id
-  firstName: String
-  lastName: String
-}
-*/
+// Register endpoint
+app.post('/api/register', async (req, res) => {
+    const { login, password, firstName, lastName, email } = req.body; // Include email
+    const verificationToken = generateToken();
+    const newUser = { login, password, firstName, lastName, email, verified: false, verificationToken };
+  
+    try {
+      const db = client.db('journeyJournal');
+      const result = await db.collection('user').insertOne(newUser);
+  
+      const mailOptions = {
+        from: process.env.EMAIL, // Sender's email address
+        to: email, // Recipient's email address
+        subject: 'Verify your email',
+        text: `Please verify your email by clicking the following link: ${process.env.BASE_URL}/verify-email?token=${verificationToken}`
+      };
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          return res.status(500).json({ error: 'Error sending verification email' });
+        }
+        console.log('Email sent: ' + info.response);
+        res.status(200).json({ _id: result.insertedId, login });
+      });
+    } catch (e) {
+      console.error('Error during registration:', e);
+      res.status(500).json({ error: e.toString() });
+    }
+  });
+  
+
+// Email verification endpoint
+app.get('/api/verify-email', async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid verification token' });
+    }
+
+    await db.collection('user').updateOne({ _id: user._id }, { $set: { verified: true }, $unset: { verificationToken: "" } });
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+// Login endpoint
 app.post('/api/login', async (req, res) => {
   const { login, password } = req.body;
 
@@ -68,78 +108,22 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-/* 
-Register endpoint 
 
-Request body
-{
-  login: String
-  password: String
-  firstName: String
-  lastName: String
-}
-
-Response
-{
-  _id: new id
-  login: username
-}
-*/
-app.post('/api/register', async (req, res) => {
-  const { login, password, firstName, lastName } = req.body;
-  const newUser = { login, password, firstName, lastName };
-
-  try {
-    const db = client.db('journeyJournal');
-    const result = await db.collection('user').insertOne(newUser);
-    res.status(200).json({_id: result.insertedId, login: login});
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-/* 
-Add entry endpoint 
-
-Request body
-{
-  userId: _id
-  title: String
-  description: String
-  location: String
-}
-
-Response
-{
-  _id: new id
-}
-*/
+// Add entry endpoint
 app.post('/api/addEntry', async (req, res) => {
-  const { userId, title, description, location} = req.body;
-  const newTrip = { userId, title, description, location};
+  const { userId, title, description, location } = req.body;
+  const newEntry = { userId, title, description, location };
 
   try {
     const db = client.db('journeyJournal');
-    const result = await db.collection('journalEntry').insertOne(newTrip);
+    const result = await db.collection('journalEntry').insertOne(newEntry);
     res.status(200).json({ _id: result.insertedId });
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
 
-/* 
-Delete entry endpoint 
-
-example DEL URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
-
-Request body
-{
-  N/A
-}
-
-Response
-simple message
-*/
+// Delete entry endpoint
 app.delete('/api/deleteEntry/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -156,21 +140,7 @@ app.delete('/api/deleteEntry/:id', async (req, res) => {
   }
 });
 
-/* 
-Edit entry endpoint 
-
-example PUT URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
-
-Request body
-{
-  any info to update
-}
-
-Response
-{
-  updated entry
-}
-*/
+// Edit entry endpoint
 app.put('/api/editEntry/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -192,16 +162,7 @@ app.put('/api/editEntry/:id', async (req, res) => {
   }
 });
 
-
-/* 
-Search entry endpoint 
-
-Request
-search: String
-
-Response
-resuts[]
-*/
+// Search entry endpoint
 app.post('/api/searchEntry', async (req, res) => {
   const { search } = req.body;
 
@@ -214,17 +175,9 @@ app.post('/api/searchEntry', async (req, res) => {
   }
 });
 
-/* 
-Get endpoint (for connection testing)
-
-Request
-none
-
-Response
-'Hello World!'
-*/
+// Get endpoint for connection testing
 app.get('/', (req, res) => {
-  res.json({message: 'Hello World!'});
+  res.json({ message: 'Hello World!' });
 });
 
 // Start the server
