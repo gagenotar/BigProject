@@ -13,57 +13,64 @@ const MyTrips = () => {
         }
     }
 
-    var card = '';
     var search = '';
+    var userId = '';
 
     const [message,setMessage] = useState('');
-    const [searchResults,setResults] = useState('');
-    const [cardList,setCardList] = useState('');
+    const [myEntriesList,setMyEntriesList] = useState('');
 
-    var _ud = localStorage.getItem('user_data');
-    var ud = JSON.parse(_ud);
-    var userId = ud.id;
-    var firstName = ud.firstName;
-    var lastName = ud.lastName;
-
-    const searchMyTrips = async (event) => {
+    const searchMyEntries = async (event) => {
 
         event.preventDefault();
         		
-        var obj = {userId:userId,search:search.value};
+        var obj = 
+        {
+            search: search.value, 
+            userId: userId.value
+        };
         var js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(buildPathAPI('api/searchcards'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
-
-            var txt = await response.text();
-            var res = JSON.parse(txt);
-            var _results = res.results;
-            var resultText = '';
-            for( var i=0; i<_results.length; i++ )
+            const response = await fetch(buildPathAPI('api/searchMyEntries'),
             {
-                resultText += _results[i];
-                if( i < _results.length - 1 )
-                {
-                    resultText += ', ';
-                }
-            }
-            setResults('Card(s) have been retrieved');
-            setCardList(resultText);
+                method: 'POST',
+                body: js,
+                headers:{'Content-Type': 'application/json'}
+            });
+
+            
+            var res = JSON.parse(await response.text());
+            setMyEntriesList(JSON.stringify(res));
         }
         catch(e)
         {
             alert(e.toString());
-            setResults(e.toString());
         }        
     }
 
     return (
         <>
-            <div>
-                
+            <div id="firstDiv">
+                <input 
+                    type="text" 
+                    id="" 
+                    placeholder="search" 
+                    ref={(c) => search = c} 
+                />
+                <input 
+                    type="text" 
+                    id="" 
+                    placeholder="userId" 
+                    ref={(c) => userId = c} 
+                />
+                <button 
+                    type="button" 
+                    id="" 
+                    class="buttons" 
+                    onClick={searchMyEntries}
+                > Search your entries</button>
+                <p id="">{myEntriesList}</p>
             </div>
         </>
     );
