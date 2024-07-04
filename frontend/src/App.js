@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import MyTripsPage from './pages/MyTripsPage';
+import CreatePage from './pages/CreatePage';
+import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
 function App() {
@@ -12,6 +15,9 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/mytrips" element={<MyTripsPage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
