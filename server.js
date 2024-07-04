@@ -198,20 +198,55 @@ app.put('/api/editEntry/:id', async (req, res) => {
 
 
 /* 
-Search entry endpoint 
+Search all entries endpoint 
 
 Request
 search: String
 
 Response
-resuts[]
+results[]
 */
-app.post('/api/searchEntry', async (req, res) => {
+app.post('/api/searchEntries', async (req, res) => {
   const { search } = req.body;
 
   try {
     const db = client.db('journeyJournal');
     const results = await db.collection('journalEntry').find({ title: { $regex: search, $options: 'i' } }).toArray();
+    res.status(200).json(results);
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+/* 
+Search all entries endpoint 
+
+Request
+{
+  search: String
+  userId: _id
+}
+
+
+Response
+results[]
+*/
+app.post('/api/searchMyEntries', async (req, res) => {
+  const { search, userId } = req.body;
+
+  try {
+    const db = client.db('journeyJournal');
+    const results = await db.collection('journalEntry').find(
+    { 
+      $or : 
+      [
+        {title: { $regex: search, $options: 'i' }}, 
+        {description: { $regex: search, $options: 'i' }}, 
+        {location: { $regex: search, $options: 'i' }}
+      ],
+      userId: userId
+    }).toArray();
+    
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
