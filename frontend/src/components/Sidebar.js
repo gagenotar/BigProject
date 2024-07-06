@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './Home.css'; 
 import './Sidebar.css';
 import "./Layout.css";
@@ -7,6 +7,8 @@ import appLogo from './app-logo.png';
 
 const Sidebar = () => { 
     const [isOpen, setIsOpen] = useState(false);
+    const [pageTitle, setPageTitle] = useState('Login');
+    const location = useLocation();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -15,12 +17,32 @@ const Sidebar = () => {
     const closeSidebar = () => {
         setIsOpen(false);
     };
-    
+
+    useEffect(() => {
+        // update page title based on current path
+        switch (location.pathname) {
+            case '/mytrips':
+                setPageTitle('MyTrips');
+                break;
+            case '/create':
+                setPageTitle('Create');
+                break;
+            case '/profile':
+                setPageTitle('Profile');
+                break;
+            case '/home':
+                setPageTitle('Home');
+                break;
+            default:
+                setPageTitle('Login');
+        }
+    }, [location.pathname]);
+
     return (
     <>
         <div className="top-page">
             <img src={appLogo} className="logo-page" alt="App Logo" />
-            <div className="page-name">Home</div>
+            <div className="page-name">{pageTitle}</div>
         </div>
         <div className="sidebar">
             <nav className={isOpen ? 'open' : ''}>
