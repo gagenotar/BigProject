@@ -9,9 +9,40 @@
 #my-trips-div {
     width: 100vw;
     margin: auto;
-    margin-top: 95px;
+    margin-top: 100px;
     padding: 5vh;
     border-radius: 40px;
     background: rgba(255, 255, 255, 0.70);
     box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+}
+
+#my-trips-nav a {
+    margin: 0;
+}
+
+#active-link a {
+    font-weight: bold;
+}
+
+#entry-search-bar {
+    margin: 12px;
+    padding: 6px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#single-view-btn {
+    max-width: 100px;
+}
+
+#rating-text {
+    padding: 0;
+}
+
+#action-btns {
+    display: flex;
+}
+
+#action-btns button {
+    flex: 1;
 }

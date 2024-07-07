@@ -20,6 +20,14 @@ const ViewTrip = () => {
         }
     }
 
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:3000/' + route;
+        }
+    }
+
     const { id } = useParams();
     const [trip, setTrip] = useState(null);
 
@@ -45,16 +53,25 @@ const ViewTrip = () => {
         fetchTrip();
     }, [id]);
 
-    const handleEdit = () => {
+    const redirectTo = (route, id) => {
+        const path = buildPath(`${route}${id}`);
+        window.location.href = path;
+    };
 
+    const handleEdit = () => {
+        redirectTo('editEntry/', id)
     };
 
     const handleDelete = async () => {
+        alert('Please confirm you want to delete:' + id);
         try {
-            await fetch(`http://localhost:5001/api/deleteTrip/${id}`, {
+            await fetch(buildPathAPI('api/deleteEntry/', id), {
                 method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
             });
+            redirectTo('mytrips', '');
         } catch (e) {
+            alert(e.toString());
             console.error(e);
         }
     };
@@ -63,10 +80,54 @@ const ViewTrip = () => {
 
     return (
         <div>
-            <h1>{trip.title}</h1>
-            <p>{trip.description}</p>
-            <button onClick={handleEdit}>Edit</button>
-            <button onClick={handleDelete}>Delete</button>
+            <div className='container-sm' id='view-trip-div'>
+                <div className='row'>
+                    <div className='col-sm-6'>
+                        <div className='row justify-content-start'>
+                            <div className='col'>Username</div>
+                            <div className='col text-body-secondary'>Date</div>
+                        </div>
+                    </div>
+                    <div className='col-sm-6'>
+                        <div className='row mb-3' id='action-btns'> 
+                            <button 
+                            type='button'
+                            className='btn btn-primary' 
+                            onClick={handleEdit}
+                            >Edit</button>
+                            <button 
+                            type='button'
+                            className='btn btn-danger'
+                            onClick={handleDelete}
+                            >Delete</button>
+                            <button 
+                            type='button'
+                            className='btn btn-secondary'
+                            onClick={() => {redirectTo('mytrips', '')}}
+                            >Done</button>
+                        </div>
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='my-3 text-center'>img</div>
+                </div>
+                <div className='row'>
+                    <div className='col-8'>
+                        <h3>{trip.title}</h3>
+                    </div>
+                    <div className='col-4'>
+                        <div className='row justify-content-end text-end'>
+                            <p id='rating-text'>Rating</p>
+                        </div>
+                    </div>
+                </div>
+                <div className='row'>
+                    <p className='text-body-secondary'>Location</p>
+                </div>
+                <div className='row'>
+                    <p>{trip.description}</p>
+                </div>
+            </div>
         </div>
     );
 };

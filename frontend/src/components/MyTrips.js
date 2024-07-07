@@ -90,11 +90,43 @@ const MyTrips = () => {
 
     const renderCards = (entries) => {
         return entries.map((entry, index) => (
-            <div className='card' key={index}>
-                <div className='card-body'>
-                    <button onClick={() => redirectTo('getEntry/', entry._id)}>Click</button>
-                    <h1>{entry.title}</h1>
-                    <p>{entry.description}</p>
+            <div className='card mb-4' key={index}>
+                <div className='row'>
+                    <div className='col-3'>
+                        <div className='row justify-content-center'>img</div>
+                    </div>
+                    <div className='col-9'>
+                        <div className='card-body text-start'>
+                            <div className='row align-items-center mb-3'>
+                                <div className='col text-body-secondary'>
+                                    Date
+                                </div>
+                                <div className='col'>
+                                    <div className='row justify-content-end'>
+                                        <button 
+                                        type="button" 
+                                        class="btn btn-secondary" 
+                                        onClick={() => redirectTo('getEntry/', entry._id)}
+                                        id='single-view-btn'
+                                        >View</button>                              
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className='col-8'>
+                                    <h3>{entry.title}</h3>
+                                </div>
+                                <div className='col-4'>
+                                    <div className='row justify-content-end text-end'>
+                                        <p id='rating-text'>Rating</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <p>{entry.description}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         ));
@@ -103,24 +135,32 @@ const MyTrips = () => {
     return (
         <div>
             <div className='container-sm text-center' id="my-trips-div">
-                <div className='row justify-content-center'>
+                <div className='row justify-content-center align-items-center' id='my-trips-nav'>
                     <div className='col-sm-6'>
                         <input 
+                            className='input-group'
                             type="text" 
                             id="entry-search-bar" 
-                            placeholder="search" 
+                            placeholder="Search..." 
                             ref={(c) => search = c} 
                             onChange={searchMyEntries}
                         />
-                        <div className='col-sm-2'>
-                            <p><a href='mytrips'>List view</a></p>
-                        </div>
-                        <div className='col-sm-2'>
-                            <p><a href='mytrips-folders'>Folder view</a></p>
-                        </div>
-                        <div className='col-sm-2'>
-                            <p><a href='mytrips-map'>Map view</a></p>
-                        </div>
+                    </div>
+                    <div className='col-sm-2' id='active-link'>
+                        <a 
+                        className='link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover' 
+                        href='mytrips'       
+                        >List view</a>
+                    </div>
+                    <div className='col-sm-2' id='' >
+                        <a className='link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover' 
+                        href='mytrips-folders'
+                        >Folder view</a>
+                    </div>
+                    <div className='col-sm-2' id='' >
+                        <a className='link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover' 
+                        href='mytrips-map'
+                        >Map view</a>
                     </div>
                 </div>
                 <div className='row justify-content-center'>
