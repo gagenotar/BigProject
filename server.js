@@ -29,16 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the 'frontend/build' directory in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
-
-  // Wildcard route to serve index.html for all non-API requests
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
 /* 
 Login endpoint 
 
@@ -253,22 +243,40 @@ app.post('/api/searchMyEntries', async (req, res) => {
   }
 });
 
-// /* 
-// Get endpoint (for connection testing)
+/* 
+Get entry by ID endpoint 
 
-// Request
-// none
+Request
+{id: entryId}
 
-// Response
-// 'Hello World!'
-// */
-// app.get('/', (req, res) => {
-//   res.json({message: 'Hello World!'});
-// });
+Response
+{entry}
+*/
+app.get('/api/getEntry/:id', async (req, res) => {
+  try {
+    console.log(`Received request for trip with id: ${req.params.id}`);
+    const db = client.db('journeyJournal');
+    const entry = await db.collection('journalEntry').findOne({ _id: new ObjectId(req.params.id) });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/public', 'index.html'));
+    if (!entry) {
+      res.status(404).json({ error: 'Entry not found' });
+    } else {
+      res.status(200).json(entry);
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
 });
+
+// Serve static files from the 'frontend/build' directory in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  // Wildcard route to serve index.html for all non-API requests
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
 
 // Start the server
 app.listen(PORT, () => {
