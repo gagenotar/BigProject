@@ -1,6 +1,17 @@
-#firstDiv {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#my-trips-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: 'Inter';
+  padding: 0;
+}
+
+#my-trips-div {
+    width: 100vw;
+    margin: auto;
+    margin-top: 95px;
+    padding: 5vh;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.70);
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
 }

@@ -6,7 +6,7 @@ import '../components/MyTrips.css';
 
 const MyTripsPage = () => {
     return (
-        <div>
+        <div className='container-fluid' id='my-trips-page'>
             <Sidebar />
             <MyTrips />
         </div>
