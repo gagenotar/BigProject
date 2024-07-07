@@ -209,7 +209,7 @@ app.post('/api/searchEntries', async (req, res) => {
 });
 
 /* 
-Search all entries endpoint 
+Search entries for a specific userId endpoint 
 
 Request
 {

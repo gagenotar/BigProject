@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import MyTripsPage from './pages/MyTripsPage';
 import ViewTripPage from './pages/ViewTripPage';
+import EditPage from './pages/EditPage';
 import CreatePage from './pages/CreatePage';
 import ProfilePage from './pages/ProfilePage';
 import './App.css';
@@ -18,6 +19,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/mytrips" element={<MyTripsPage />} />
         <Route path="/getEntry/:id" element={<ViewTripPage />} />
+        <Route path="/editEntry/:id" element={<EditPage />} />
         <Route path="/create" element={<CreatePage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
