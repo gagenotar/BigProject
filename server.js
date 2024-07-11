@@ -29,16 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the 'frontend/build' directory in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
-
-  // Wildcard route to serve index.html for all non-API requests
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
 /* 
 Login endpoint 
 
@@ -198,15 +188,15 @@ app.put('/api/editEntry/:id', async (req, res) => {
 
 
 /* 
-Search entry endpoint 
+Search all entries endpoint 
 
 Request
 search: String
 
 Response
-resuts[]
+results[]
 */
-app.post('/api/searchEntry', async (req, res) => {
+app.post('/api/searchEntries', async (req, res) => {
   const { search } = req.body;
 
   try {
@@ -218,22 +208,75 @@ app.post('/api/searchEntry', async (req, res) => {
   }
 });
 
-// /* 
-// Get endpoint (for connection testing)
+/* 
+Search entries for a specific userId endpoint 
 
-// Request
-// none
+Request
+{
+  search: String
+  userId: _id
+}
 
-// Response
-// 'Hello World!'
-// */
-// app.get('/', (req, res) => {
-//   res.json({message: 'Hello World!'});
-// });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/public', 'index.html'));
+Response
+results[]
+*/
+app.post('/api/searchMyEntries', async (req, res) => {
+  const { search, userId } = req.body;
+
+  try {
+    const db = client.db('journeyJournal');
+    const results = await db.collection('journalEntry').find(
+    { 
+      $or : 
+      [
+        {title: { $regex: search, $options: 'i' }}, 
+        {description: { $regex: search, $options: 'i' }}, 
+        {location: { $regex: search, $options: 'i' }}
+      ],
+      userId: userId
+    }).toArray();
+    
+    res.status(200).json(results);
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
 });
+
+/* 
+Get entry by ID endpoint 
+
+Request
+{id: entryId}
+
+Response
+{entry}
+*/
+app.get('/api/getEntry/:id', async (req, res) => {
+  try {
+    console.log(`Received request for trip with id: ${req.params.id}`);
+    const db = client.db('journeyJournal');
+    const entry = await db.collection('journalEntry').findOne({ _id: new ObjectId(req.params.id) });
+
+    if (!entry) {
+      res.status(404).json({ error: 'Entry not found' });
+    } else {
+      res.status(200).json(entry);
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+// Serve static files from the 'frontend/build' directory in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  // Wildcard route to serve index.html for all non-API requests
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
 
 // Start the server
 app.listen(PORT, () => {
