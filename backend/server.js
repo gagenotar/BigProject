@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 const path = require('path');
+require('dotenv').config();
+
+const authRoutes = require('./routes/authRoutes');
 const PORT = process.env.PORT || 5001;
 
 // Middleware setup
@@ -12,9 +14,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-require('dotenv').config();
-const url = process.env.MONGODB_URI;
 const { MongoClient, ObjectId } = require('mongodb');
+const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 client.connect().catch(err => {
   console.error('Failed to connect to MongoDB', err);
@@ -29,68 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
-/* 
-Login endpoint 
-
-Request
-{
-  email: String
-  password: String
-}
-Response
-{
-  id: _id
-  login: String
-  firstName: String
-  lastName: String
-}
-*/
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({ email, password });
-    if (user) {
-      res.status(200).json({ id: user._id, login: user.login, firstName: user.firstName, lastName: user.lastName });
-    } else {
-      res.status(404).json({ error: 'Invalid credentials' });
-    }
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-/* 
-Register endpoint 
-
-Request body
-{
-  firstName: String
-  lastName: String
-  email: String
-  login: String
-  password: String
-}
-
-Response
-{
-  id: new id
-  login: username
-}
-*/
-app.post('/api/register', async (req, res) => {
-  const { firstName, lastName, email, login, password } = req.body;
-  const newUser = { firstName, lastName, email, login, password};
-
-  try {
-    const db = client.db('journeyJournal');
-    const result = await db.collection('user').insertOne(newUser);
-    res.status(200).json({id: result.insertedId, login: login});
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
+app.use('/api/auth', authRoutes);
 
 /* 
 Add entry endpoint 
@@ -124,7 +64,7 @@ app.post('/api/addEntry', async (req, res) => {
 /* 
 Delete entry endpoint 
 
-example DEL URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
+example DEL URL: http://localhost:5001/api/deleteEntry/66798781672b94aba8e51609
 
 Request body
 {
