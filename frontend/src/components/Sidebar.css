@@ -20,18 +20,23 @@ nav {
   font-size: 35px;
   cursor: pointer;
   border-radius: 0 0 12px 0;
-  padding: 25px 15px;
   color: #0C274E;
+  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.hamburger-menu {
+  padding: 15px 12px;
 }
 .hamburger-menu-sidebar {
   display: flex;
   align-items: center;
-  width: 66px;
+  width: 60px;
+  padding: 25px 10px;
 }
 .hamburger-menu:hover, 
 .hamburger-menu-sidebar:hover {
   color: white;
   background-color: #0C274E;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 .logo-page, 
 .logo-sidebar {

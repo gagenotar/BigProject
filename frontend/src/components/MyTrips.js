@@ -1,3 +1,4 @@
+// MyTrips.js
 import React, { useState, useEffect } from 'react';
 import "./MyTrips.css";
 
@@ -22,16 +23,15 @@ const MyTrips = () => {
     }
 
     var search = '';
-    var userId = '';
+    const userId = '6671b214613f5493b0afe5ca'; // This should be a string representation of ObjectId
 
-    const [message,setMessage] = useState('');
+    const [message, setMessage] = useState('');
     const [myEntriesList, setMyEntriesList] = useState([]);
-
 
     const fetchEntries = async () => {
         var obj = { 
             search: '',
-            userId: '6671b214613f5493b0afe5ca' 
+            userId: userId // Using string representation
         }; // Assuming you fetch all entries for the user
         var js = JSON.stringify(obj);
 
@@ -54,33 +54,26 @@ const MyTrips = () => {
     }, []);
 
     const searchMyEntries = async (event) => {
-
         event.preventDefault();
-        		
-        var obj = 
-        {
+        
+        var obj = {
             search: search.value, 
-            userId: '6671b214613f5493b0afe5ca'
+            userId: userId // Using string representation
         };
         var js = JSON.stringify(obj);
 
-        try
-        {
-            const response = await fetch(buildPathAPI('api/searchMyEntries'),
-            {
+        try {
+            const response = await fetch(buildPathAPI('api/searchMyEntries'), {
                 method: 'POST',
                 body: js,
-                headers:{'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
 
-            
             var res = JSON.parse(await response.text());
             setMyEntriesList(res);
-        }
-        catch(e)
-        {
+        } catch (e) {
             alert(e.toString());
-        }        
+        }
     }
 
     const redirectTo = (route, id) => {
@@ -99,13 +92,13 @@ const MyTrips = () => {
                         <div className='card-body text-start'>
                             <div className='row align-items-center mb-3'>
                                 <div className='col text-body-secondary'>
-                                    Date
+                                    {new Date(entry.date).toLocaleDateString()}
                                 </div>
                                 <div className='col'>
                                     <div className='row justify-content-end'>
                                         <button 
                                         type="button" 
-                                        class="btn btn-secondary" 
+                                        className="btn btn-secondary" 
                                         onClick={() => redirectTo('getEntry/', entry._id)}
                                         id='single-view-btn'
                                         >View</button>                              
@@ -118,7 +111,7 @@ const MyTrips = () => {
                                 </div>
                                 <div className='col-4'>
                                     <div className='row justify-content-end text-end'>
-                                        <p id='rating-text'>Rating</p>
+                                        <p id='rating-text'>Rating: {entry.rating}</p>
                                     </div>
                                 </div>
                             </div>

@@ -197,16 +197,41 @@ Response
 results[]
 */
 app.post('/api/searchEntries', async (req, res) => {
-  const { search } = req.body;
+  const { search, userId } = req.body;
 
   try {
     const db = client.db('journeyJournal');
-    const results = await db.collection('journalEntry').find({ title: { $regex: search, $options: 'i' } }).toArray();
+    const query = { ...(search ? { title: { $regex: search, $options: 'i' } } : {}), ...(userId ? { userId: new ObjectId(userId) } : {}) };
+    const results = await db.collection('journalEntry').aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      { $unwind: '$userDetails' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          location: 1,
+          picture: 1,
+          date: 1,
+          username: '$userDetails.login',
+          userPicture: '$userDetails.pfp'
+        }
+      }
+    ]).toArray();
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
+
 
 /* 
 Search entries for a specific userId endpoint 
@@ -226,17 +251,15 @@ app.post('/api/searchMyEntries', async (req, res) => {
 
   try {
     const db = client.db('journeyJournal');
-    const results = await db.collection('journalEntry').find(
-    { 
-      $or : 
-      [
-        {title: { $regex: search, $options: 'i' }}, 
-        {description: { $regex: search, $options: 'i' }}, 
-        {location: { $regex: search, $options: 'i' }}
+    const query = {
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { location: { $regex: search, $options: 'i' } }
       ],
-      userId: userId
-    }).toArray();
-    
+      userId: new ObjectId(userId) // Ensure userId is ObjectId
+    };
+    const results = await db.collection('journalEntry').find(query).toArray();
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
