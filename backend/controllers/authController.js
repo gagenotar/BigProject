@@ -1,10 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.js');
 const { generateTokens } = require('../utils/tokenUtils.js');
+const mongoose = require('mongoose');
+
+// TODO: Use bcrypt for password encryption/decryption
+
+// Connect to MongoDB
+const url = process.env.MONGODB_URI;
+mongoose.connect(url)
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+
   try {
+    const db = mongoose.connection;
     const user = await User.findOne({ email, password });
     if (!user) 
       return res.status(401).json({ message: 'Unauthorized' });
@@ -31,15 +40,67 @@ exports.register = async (req, res) => {
   const newUser = new User({ firstName, lastName, email, login, password });
 
   try {
-    const result = await newUser.save();
+    const db = mongoose.connection;
+    const result = await User.insertOne(newUser);
+
     const { accessToken, refreshToken } = generateTokens(result);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
+
+    res.cookie('refreshToken', refreshToken, 
+      { 
+        httpOnly: true, 
+        secure: true, 
+        sameSite: 'Strict' 
+      });
+      
+    // Send access token containing userId
     res.status(201).json({ accessToken });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+exports.refreshToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(403).json({ message: 'Refresh token is required' });
+
+  jwt.verify(
+    refreshToken, 
+    process.env.REFRESH_TOKEN_SECRET, 
+    async (err, decoded) => {
+    if (err) return res.status(401).json({ message: 'Invalid refresh token' });
+
+    const foundUser = await User.findOne(
+      { 
+        _id: decoded.userId,
+        login: decoded.login
+       });
+    const user = { id: decoded.userId };
+
+    const accessToken = jwt.sign(
+      { 
+        _id: decoded.userId,
+        login: decoded.login
+       }, 
+       process.env.ACCESS_TOKEN_SECRET, 
+       { expiresIn: '15m' }
+      );
+
+    res.json({ accessToken });
+  });
+};
+
+exports.logout = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(204); // No content
+  res.clearCookie('refreshToken', 
+    { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'Strict' 
+    });
+    
+    res.json({'message' : 'Cookie cleared'});
+};
 
 // /* 
 // Login endpoint 

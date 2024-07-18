@@ -16,10 +16,7 @@ app.use(bodyParser.json());
 
 // Connect to MongoDB
 const url = process.env.MONGODB_URI;
-mongoose.connect(url, {
-  connectTimeoutMS: 30000, // 30 seconds
-  socketTimeoutMS: 30000 // 30 seconds
-})
+mongoose.connect(url)
 .then(() => {
   console.log('Connected to MongoDB');
 })
@@ -37,6 +34,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api', verifyJWT);
 
 /* 
 Add entry endpoint 
