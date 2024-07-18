@@ -108,9 +108,21 @@ Response
   _id: new id
 }
 */
+
 app.post('/api/addEntry', async (req, res) => {
   const { userId, title, description, location} = req.body;
-  const newTrip = { userId, title, description, location};
+  const newTrip = { 
+    userId, 
+    title, 
+    description, 
+    location:{
+      street: location.street,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+    },
+    rating,
+  };
 
   try {
     const db = client.db('journeyJournal');

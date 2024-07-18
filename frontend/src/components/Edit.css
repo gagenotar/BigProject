@@ -1,0 +1,79 @@
+/* Add these styles to your Create.css or Edit.css */
+
+.card-centered {
+    background-color: #EFEFE6;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 16px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-details {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .user-picture {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .username {
+    font-weight: bold;
+  }
+  
+  .form-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .image-upload {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .preview-image {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
+  .star-rating {
+    display: flex;
+  }
+  
+  .star {
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .star.filled {
+    color: gold;
+  }
+  
+  button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #007BFF;
+  }
+  

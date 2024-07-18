@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ViewTrip = () => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
-        }
-    }
     function buildPathAPI(route, id) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route + id;
@@ -30,6 +23,7 @@ const ViewTrip = () => {
 
     const { id } = useParams();
     const [trip, setTrip] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTrip = async () => {
@@ -40,7 +34,7 @@ const ViewTrip = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry', id));
+                    throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry/', id));
                 }
 
                 const data = await response.json();
@@ -53,23 +47,23 @@ const ViewTrip = () => {
         fetchTrip();
     }, [id]);
 
-    const redirectTo = (route, id) => {
-        const path = buildPath(`${route}${id}`);
+    const redirectTo = (route) => {
+        const path = buildPath(route);
         window.location.href = path;
     };
 
     const handleEdit = () => {
-        redirectTo('editEntry/', id)
+        navigate(`/editEntry/${id}`, { state: { trip } });
     };
 
     const handleDelete = async () => {
-        alert('Please confirm you want to delete:' + id);
+        alert('Please confirm you want to delete: ' + id);
         try {
             await fetch(buildPathAPI('api/deleteEntry/', id), {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
             });
-            redirectTo('mytrips', '');
+            redirectTo('mytrips');
         } catch (e) {
             alert(e.toString());
             console.error(e);
@@ -103,7 +97,7 @@ const ViewTrip = () => {
                             <button 
                             type='button'
                             className='btn btn-secondary'
-                            onClick={() => {redirectTo('mytrips', '')}}
+                            onClick={() => {redirectTo('mytrips')}}
                             >Done</button>
                         </div>
                     </div>

@@ -19,6 +19,7 @@
         "express": "^4.19.2",
         "heroku": "^8.11.5",
         "mongodb": "^6.7.0",
+        "mongoose": "^8.5.1",
         "nodemon": "^3.1.4",
         "react-app": "^1.1.2",
         "vite": "^5.3.1"
