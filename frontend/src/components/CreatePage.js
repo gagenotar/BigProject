@@ -106,7 +106,7 @@ const CreatePage = () => {
       const data = await response.json();
       console.log('Entry added successfully:', data);
       setMessage('Trip has been added');
-      redirectTo('/home');
+      redirectTo('home');
     } catch (error) {
       console.error('Error adding entry:', error);
       setMessage('Error adding entry');
