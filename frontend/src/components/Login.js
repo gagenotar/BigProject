@@ -71,11 +71,11 @@ const Login = () => {
         <div id='login-component'>
             <div id='login-div'>
                 <div className='container-sm text-center'>
-                    <div className='row justify-content-center'>
-                        <div className='col-sm-5'>
-                            <img className='img-fluid' src='./brand-logo.png' alt="Brand Logo"></img>
+                    <div className='app-details'>
+                        <div className=''>
+                            <img className='logo' src='./logo.png' alt="Brand Logo"></img>
                         </div>
-                        <div className='col-sm-5' id='brand-name-div'>
+                        <div className='' id='brand-name-div'>
                             <h1 id='brand-name'>JOURNEY <br></br> JOURNAL</h1>
                         </div>
                     </div>
@@ -85,6 +85,7 @@ const Login = () => {
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
+                        <div className='header'>Email Address*</div>
                         <div className='input-group input-group-sm col-sm-12 mb-3'>
                             <input 
                                 type="email" 
@@ -95,6 +96,7 @@ const Login = () => {
                                 required 
                             />
                         </div>
+                        <div className='header'>Password*</div>
                         <div className='input-group input-group-sm col-sm-12 mb-3'>
                             <input 
                                 type="password" 
@@ -105,18 +107,19 @@ const Login = () => {
                                 required 
                             />
                         </div>
+
                         <div className='row justify-content-end mb-3'>
                             <div className='col-sm-6 justify-content-end text-end'>
                                 <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
                             </div>
                         </div>
-                        <div className='row justify-content-center'>
+                        <div className='row justify-content-center login-button'>
                             <div className='col-sm-12 mb-3'>
                                 <button type="submit" className="btn btn-primary" id='login-btn'>Log in</button>
                             </div>
                         </div>
                     </form>
-                    <div className='row justify-content-center'>
+                    <div className='row justify-content-center signup-prompt'>
                         <div className='col-sm'>
                             <span className="link-opacity-75-hover" id='signup-redirect'><p>Don't have an account? </p><a href='#' onClick={() => redirectTo('signup')}>Sign up.</a></span>
                         </div>

@@ -251,15 +251,17 @@ app.post('/api/searchMyEntries', async (req, res) => {
 
   try {
     const db = client.db('journeyJournal');
-    const query = {
-      $or: [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } }
+    const results = await db.collection('journalEntry').find(
+    { 
+      $or : 
+      [
+        {title: { $regex: search, $options: 'i' }}, 
+        {description: { $regex: search, $options: 'i' }}, 
+        {location: { $regex: search, $options: 'i' }}
       ],
-      userId: new ObjectId(userId) // Ensure userId is ObjectId
-    };
-    const results = await db.collection('journalEntry').find(query).toArray();
+      userId: userId
+    }).toArray();
+    
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
