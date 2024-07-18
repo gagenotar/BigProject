@@ -6,6 +6,7 @@ const CreatePage = () => {
     return (
         <div>
             <Sidebar />
+            <Create />
             <div style={{ paddingTop: '200px' }}>
                 This is the CreatePage!
             </div>

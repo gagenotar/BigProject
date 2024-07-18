@@ -1,0 +1,117 @@
+.layout {
+    display: flex;
+  }
+  
+  .main-content {
+    background-color: #EFEFE6;
+    flex: 1;
+    padding: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .card-centered {
+    width: 60%;
+    max-width: 800px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-row {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+  
+  .image-upload {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 1rem;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .image-upload label {
+    margin-bottom: 0.5rem;
+  }
+  .image-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  .details {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .details label {
+    margin-bottom: 0.5rem;
+  }
+  
+  .details input {
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .star-rating {
+    display: flex;
+    direction: row-reverse;
+    justify-content: flex-start;
+  }
+  
+  .star {
+    font-size: 2em;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 200ms;
+  }
+  
+  .star.filled {
+    color: gold;
+  }
+  
+  .star-rating input {
+    display: none;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+ 
+button {
+ 
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

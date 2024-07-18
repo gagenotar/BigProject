@@ -4,13 +4,6 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 const ViewTrip = ({ loggedInUserId }) => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
-        }
-    }
     function buildPathAPI(route, id) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route + id;
@@ -40,7 +33,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry', id));
+                    throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry/', id));
                 }
 
                 const data = await response.json();
@@ -53,8 +46,8 @@ const ViewTrip = ({ loggedInUserId }) => {
         fetchTrip();
     }, [id]);
 
-    const redirectTo = (route, id) => {
-        const path = buildPath(`${route}${id}`);
+    const redirectTo = (route) => {
+        const path = buildPath(route);
         window.location.href = path;
     };
 
@@ -68,12 +61,11 @@ const ViewTrip = ({ loggedInUserId }) => {
     };
 
     const handleEdit = () => {
-        // Perform the edit action here
-        redirectTo('editEntry/', id);
+        navigate(`/editEntry/${id}`, { state: { trip } });
     };
 
     const handleDelete = async () => {
-        alert('Please confirm you want to delete:' + id);
+        alert('Please confirm you want to delete: ' + id);
         try {
             await fetch(buildPathAPI('api/deleteEntry/', id), {
                 method: 'DELETE',
