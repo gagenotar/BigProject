@@ -118,9 +118,35 @@ Response
   _id: new id
 }
 */
-app.post('/api/addEntry', async (req, res) => {
-  const { userId, title, description, location, rating, image} = req.body;
-  const newTrip = { userId, title, description, location, rating, image};
+
+
+// app.post('/api/addEntry', async (req, res) => {
+//   const { userId, title, description, location, rating, image} = req.body;
+//   const newTrip = { userId, title, description, location, rating, image};
+
+//   try {
+//     const db = client.db('journeyJournal');
+//     const result = await db.collection('journalEntry').insertOne(newTrip);
+//     res.status(200).json({ _id: result.insertedId });
+//   } catch (e) {
+//     res.status(500).json({ error: e.toString() });
+//   }
+// });
+
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+app.post('/api/addEntry', upload.single('image'), async (req, res) => {
+  const { userId, title, description, location, rating } = req.body;
+  const newTrip = { 
+    userId, 
+    title, 
+    description, 
+    location, 
+    rating,
+    image: req.file ? req.file.path : null 
+  };
 
   try {
     const db = client.db('journeyJournal');
@@ -130,6 +156,9 @@ app.post('/api/addEntry', async (req, res) => {
     res.status(500).json({ error: e.toString() });
   }
 });
+
+app.use('/uploads', express.static('uploads'));
+
 
 /* 
 Delete entry endpoint 
@@ -210,7 +239,8 @@ app.post('/api/searchEntries', async (req, res) => {
 
   try {
     const db = client.db('journeyJournal');
-    const query = { ...(search ? { title: { $regex: search, $options: 'i' } } : {}), ...(userId ? { userId: new ObjectId(userId) } : {}) };
+    const query = { 
+      ...(search ? { title: { $regex: search, $options: 'i' } } : {}), ...(userId ? { userId: new ObjectId(userId) } : {}) };
     const results = await db.collection('journalEntry').aggregate([
       { $match: query },
       {
@@ -240,6 +270,63 @@ app.post('/api/searchEntries', async (req, res) => {
     res.status(500).json({ error: e.toString() });
   }
 });
+// app.post('/api/searchEntries', async (req, res) => {
+//   const { search, userId } = req.body;
+  
+//   try {
+//     const db = client.db('journeyJournal');
+//     let query = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+//     // Add $or condition if userId is provided
+//     if (userId) {
+//       query = { 
+//         ...query, 
+//         $or: [
+//           { userId: new ObjectId(userId) },
+//           { userId: null }
+//         ]
+//       };
+//     } else {
+//       query = {
+//         ...query,
+//         userId: { $in: [null, { $exists: true }] }
+//       };
+//     }
+
+//     console.log("Query:", query);
+
+//     const results = await db.collection('journalEntry').aggregate([
+//       { $match: query },
+//       {
+//         $lookup: {
+//           from: 'user',
+//           localField: 'userId',
+//           foreignField: '_id',
+//           as: 'userDetails'
+//         }
+//       },
+//       { $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true } }, // Allow entries with null userDetails
+//       {
+//         $project: {
+//           _id: 1,
+//           title: 1,
+//           description: 1,
+//           location: 1,
+//           picture: 1,
+//           date: 1,
+//           username: { $ifNull: ['$userDetails.login', 'Anonymous'] },
+//           userPicture: { $ifNull: ['$userDetails.pfp', 'https://via.placeholder.com/50'] }
+//         }
+//       }
+//     ]).toArray();
+
+//     console.log("Results:", results);
+
+//     res.status(200).json(results);
+//   } catch (e) {
+//     res.status(500).json({ error: e.toString() });
+//   }
+// });
 
 
 /* 

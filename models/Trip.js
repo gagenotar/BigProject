@@ -12,9 +12,15 @@ const createSchema = new Schema({
   },
   rating: { type: Number, required: true, min: 1, max: 5 },
   description: { type: String, required: true },
-  image: { type: File, required: true },
+  image: { type: String }, // Made image field not required
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+});
+
+// Middleware to update the updatedAt field before each save
+createSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
 });
 
 module.exports = mongoose.model('Create', createSchema);
