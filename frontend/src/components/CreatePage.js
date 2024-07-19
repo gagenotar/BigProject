@@ -88,15 +88,20 @@
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-//     const newEntry = { title, location, rating, description };
+
+//     const formData = new FormData();
+//     formData.append('title', title);
+//     formData.append('location', JSON.stringify(location));
+//     formData.append('rating', parseInt(rating, 10));
+//     formData.append('description', description);
+//     if (image) {
+//       formData.append('image', image);
+//     }
 
 //     try {
 //       const response = await fetch(buildPathAPI('api/addEntry'), {
 //         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(newEntry),
+//         body: formData,
 //       });
 
 //       if (!response.ok) {
@@ -251,7 +256,6 @@ const CreatePage = () => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [postSize, setPostSize] = useState('small');
   const [message, setMessage] = useState('');
 
   const handleLocationChange = (e) => {
@@ -265,45 +269,9 @@ const CreatePage = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
-    resizeImage(file);
-  };
-
-  const handlePostSizeChange = (e) => {
-    setPostSize(e.target.value);
-    if (image) {
-      resizeImage(image, e.target.value);
-    }
-  };
-
-  const resizeImage = (file, size = postSize) => {
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width, height;
-
-        if (size === 'large') {
-          width = 300;
-          height = 400;
-        } else if (size === 'medium') {
-          width = 300;
-          height = 300;
-        } else {
-          width = 300;
-          height = 200;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        const resizedImageUrl = canvas.toDataURL('image/jpeg');
-        setPreviewImage(resizedImageUrl);
-      };
-      img.src = event.target.result;
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -314,7 +282,7 @@ const CreatePage = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('location', JSON.stringify(location));
-    formData.append('rating', rating);
+    formData.append('rating', parseInt(rating, 10));
     formData.append('description', description);
     if (image) {
       formData.append('image', image);
@@ -401,12 +369,6 @@ const CreatePage = () => {
                   value={location.country}
                   onChange={handleLocationChange}
                 />
-                <label>*Post Size:</label>
-                <select value={postSize} onChange={handlePostSizeChange}>
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                </select>
               </div>
             </div>
             <div className="form-group">

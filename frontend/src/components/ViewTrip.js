@@ -87,7 +87,8 @@ const ViewTrip = ({ loggedInUserId }) => {
                     <div className='col-sm-6'>
                         <div className='row justify-content-start'>
                             <div className='col'>{trip.username || 'Unknown User'}</div> {/* Display owner's name */}
-                            <div className='col text-body-secondary'>Date</div>
+                            {/* <div className='col text-body-secondary'>Date</div> */}
+                            <div className='col text-body-secondary'>Date: {new Date(trip.date).toLocaleDateString()}</div> {/* Display date */}
                         </div>
                     </div>
                     <div className='col-sm-6'>
@@ -135,7 +136,17 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <p className='text-body-secondary'>Location: {trip.location}</p>
+                    {/* <p className='text-body-secondary'>Location: {trip.location}</p> */}
+                    <div className="location">
+                        {trip.location && (
+                        <>
+                            <div>{trip.location.street}</div>
+                            <div>{trip.location.city}</div>
+                            <div>{trip.location.state}</div>
+                            <div>{trip.location.country}</div>
+                        </>
+                        )}
+                    </div>
                 </div>
                 <div className='row'>
                     <p>{trip.description}</p>

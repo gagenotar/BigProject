@@ -13,6 +13,7 @@ const createSchema = new Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   description: { type: String, required: true },
   image: { type: String }, // Made image field not required
+  date: { type: Date, default: Date.now }, // Add date field
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

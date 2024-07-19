@@ -77,3 +77,6 @@ body {
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
 }
+.post-image {
+    height: 100px;
+}
