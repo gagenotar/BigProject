@@ -25,3 +25,17 @@
     max-width: 150px;
     margin-left: 4px;
 }
+
+#rating-text {
+    padding-right: 10px;
+}
+
+.post-image-view {
+    height: 500px;
+    width: 100%;
+    object-fit: cover;
+    padding-top: 10px;
+    padding-right: 0px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+}

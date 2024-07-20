@@ -16,6 +16,7 @@ const createSchema = new Schema({
   date: { type: Date, default: Date.now }, // Add date field
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Add userId field
 });
 
 // Middleware to update the updatedAt field before each save

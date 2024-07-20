@@ -128,7 +128,7 @@ app.post('/api/addEntry', upload.single('image'), async (req, res) => {
   const date = new Date(); // Add the current date
 
   const newTrip = { 
-    userId, 
+    userId: new ObjectId(userId), // Convert userId to ObjectId
     title, 
     description, 
     location, 

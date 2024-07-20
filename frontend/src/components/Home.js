@@ -58,7 +58,7 @@ const HomePage = ({ loggedInUserId }) => {
           </div>
           <div className="title-rating">
             <div className="title">{post.title}</div>
-            <div className="rating">Rating: {post.rating ? post.rating : 'No rating yet'}</div>
+            <div className="rating">{post.rating ? post.rating : 'No rating yet'}/5</div>
           </div>
           <div className="date">Date: {new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
           <div className="location">

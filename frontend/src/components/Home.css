@@ -78,5 +78,9 @@ body {
     -webkit-box-orient: vertical;
 }
 .post-image {
-    height: 100px;
+    /* set image size. adjust when post sizing is enabled. */
+    height: 250px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
 }

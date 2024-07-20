@@ -123,7 +123,8 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='my-3 text-center'>img</div>
+                    {/* <div className='my-3 text-center'>img</div> */}
+                    <img className="post-image-view" src={`http://localhost:5001/${trip.image}`} alt={trip.title} />
                 </div>
                 <div className='row'>
                     <div className='col-8'>
@@ -131,7 +132,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                     <div className='col-4'>
                         <div className='row justify-content-end text-end'>
-                            <p id='rating-text'>Rating: {trip.rating}</p>
+                            <p id='rating-text'>Rating: {trip.rating}/5</p>
                         </div>
                     </div>
                 </div>

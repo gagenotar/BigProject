@@ -287,6 +287,8 @@ const CreatePage = () => {
     if (image) {
       formData.append('image', image);
     }
+    formData.append('userId', '6671b214613f5493b0afe5ca'); // Use a valid ObjectId from your MongoDB
+
 
     try {
       const response = await fetch(buildPathAPI('api/addEntry'), {
