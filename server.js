@@ -248,8 +248,6 @@ app.post('/api/searchEntries', async (req, res) => {
           description: 1,
           location: 1,
           image: 1,
-          //  CHECK: image or picture???????
-
           date: 1,
           rating: 1,
           username: '$userDetails.login',
@@ -277,12 +275,35 @@ Request
 Response
 results[]
 */
+// app.post('/api/searchMyEntries', async (req, res) => {
+//   const { search, userId } = req.body;
+
+//   try {
+//     const db = client.db('journeyJournal');
+//     const results = await db.collection('journalEntry').find({
+//       $or: [
+//         { title: { $regex: search, $options: 'i' } },
+//         { description: { $regex: search, $options: 'i' } },
+//         { 'location.street': { $regex: search, $options: 'i' } },
+//         { 'location.city': { $regex: search, $options: 'i' } },
+//         { 'location.state': { $regex: search, $options: 'i' } },
+//         { 'location.country': { $regex: search, $options: 'i' } }
+//       ],
+//       userId: userId
+//     }).toArray();
+//     res.status(200).json(results);
+//   } catch (e) {
+//     res.status(500).json({ error: e.toString() });
+//   }
+// });
+
 app.post('/api/searchMyEntries', async (req, res) => {
   const { search, userId } = req.body;
 
   try {
     const db = client.db('journeyJournal');
-    const results = await db.collection('journalEntry').find({
+    const query = { 
+      userId: new ObjectId(userId),
       $or: [
         { title: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
@@ -290,14 +311,42 @@ app.post('/api/searchMyEntries', async (req, res) => {
         { 'location.city': { $regex: search, $options: 'i' } },
         { 'location.state': { $regex: search, $options: 'i' } },
         { 'location.country': { $regex: search, $options: 'i' } }
-      ],
-      userId: userId
-    }).toArray();
+      ]
+    };
+
+    const results = await db.collection('journalEntry').aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      { $unwind: '$userDetails' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          location: 1,
+          image: 1,
+          date: 1,
+          rating: 1,
+          username: '$userDetails.login',
+          userPicture: '$userDetails.pfp'
+        }
+      },
+      { $sort: { date: -1 } } // Sort by date in descending order
+    ]).toArray();
+
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
+
 
 /* 
 Get entry by ID endpoint 

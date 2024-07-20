@@ -2,19 +2,26 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  font-family: 'Inter';
+  font-family: Inter, Arial, Helvetica, sans-serif;
   padding: 0;
+  background-color: #EFEFE6;
 }
 
 #my-trips-div {
     width: 100vw;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
     padding: 5vh;
     border-radius: 40px;
-    background: rgba(255, 255, 255, 0.70);
-    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+    /* background: rgba(255, 255, 255, 0.70); */
+    /* box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10); */
 }
+
+/* 
+Manually set post height if needed:
+.post-from-list {
+    background-color: red;
+} */
 
 #my-trips-nav a {
     margin: 0;
@@ -45,4 +52,14 @@
 
 #action-btns button {
     flex: 1;
+}
+
+.post-image {
+    border-radius: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.entry-title {
+    font-weight: bold;
 }
