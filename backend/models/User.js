@@ -7,6 +7,8 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   login: { type: String, required: true, unique: true },
   password: { type: String, required: true }
+}, {
+  collection: 'user'  // Specify the collection name here
 });
 
 module.exports = mongoose.model('user', userSchema);

@@ -4,14 +4,7 @@ import { useParams } from 'react-router-dom';
 const ViewTrip = () => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
-
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
-        }
-    }
+    
     function buildPathAPI(route, id) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route + id;

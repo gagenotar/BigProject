@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import "./Login.css";
 
 const Login = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
-    const navigate = useNavigate();
 
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
@@ -36,12 +34,13 @@ const Login = () => {
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(buildPathAPI('api/login'), {
+            const response = await fetch(buildPathAPI('api/auth/login'), {
                 method: 'POST',
                 body: js,
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
 
             alert('doIt() ' + email + ' ' + password);
@@ -52,8 +51,12 @@ const Login = () => {
                 setMessage('User/Password combination incorrect');
             }
             else {
+                localStorage.setItem('accessToken', res.accessToken);
                 setMessage(JSON.stringify(res));
-                redirectTo('home');
+                // document.cookie = "testCookie=testing; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                console.log(document.cookie);
+                // window.location.href = 'http://localhost:3000/home'
+                // redirectTo('home');
             }
 
         } catch (e) {

@@ -27,27 +27,83 @@ const MyTrips = () => {
     const [message,setMessage] = useState('');
     const [myEntriesList, setMyEntriesList] = useState([]);
 
+    const refreshToken = async () => {
+        try {
+          const response = await fetch(buildPathAPI('api/auth/refresh'), {
+            method: 'GET',
+            credentials: 'include'  // Include cookies with the request
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+      
+          const res = await response.json();
+          console.log('Refresh token response:', res);
+      
+          if (res.accessToken) {
+            console.log('New access token:', res.accessToken);
+            localStorage.setItem('accessToken', res.accessToken);
+            return res.accessToken;
+          } else {
+            console.error('Failed to refresh token:', res.message);
+            throw new Error('Failed to refresh token');
+          }
+        } catch (error) {
+          console.error('Error refreshing token:', error);
+          // Redirect to login or handle token refresh failure
+          // window.location.href = buildPath('');
+        }
+      };
+      
+    
 
     const fetchEntries = async () => {
-        var obj = { 
-            search: '',
-            userId: '6671b214613f5493b0afe5ca' 
-        }; // Assuming you fetch all entries for the user
-        var js = JSON.stringify(obj);
-
+        const obj = { search: '', userId: '6671b214613f5493b0afe5ca' }; // Example userId
+        const js = JSON.stringify(obj);
+        let accessToken = localStorage.getItem('accessToken');
+    
         try {
-            const response = await fetch(buildPathAPI('api/searchMyEntries'), {
+            let response = await fetch(buildPathAPI('api/searchMyEntries'), {
                 method: 'POST',
                 body: js,
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                credentials: 'include'  // Include cookies with the request
             });
 
-            var res = JSON.parse(await response.text());
-            setMyEntriesList(res); // Assuming res is an array of entries
+            if (response.status === 403) {
+                // Token might be expired, try to refresh
+                let newToken = await refreshToken();
+                if (!newToken) {
+                    throw new Error('Error line 4', response);
+                }
+    
+                // Retry fetching with the new access token
+                response = await fetch(buildPathAPI('api/searchMyEntries'), {
+                    method: 'POST',
+                    body: js,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    credentials: 'include'
+                });            
+            }
+    
+            if (response.status !== 200) {
+                throw new Error('Error line 6', response);
+            }
+    
+            const res = await response.json();
+            setMyEntriesList(res);
         } catch (e) {
             alert(e.toString());
         }
     };
+    
 
     useEffect(() => {
         fetchEntries();

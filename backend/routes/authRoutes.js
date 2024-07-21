@@ -6,12 +6,12 @@ router.route('/login')
     .post(authController.login)
 
 router.route('/register')
-    .post()
+    .post(authController.register)
 
 router.route('/refresh')
-    .get()
+    .get(authController.refreshToken)
 
 router.route('/logout')
-    .post()
+    .post(authController.logout)
 
 module.exports = router;

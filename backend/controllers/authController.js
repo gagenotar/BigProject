@@ -1,57 +1,72 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.js');
 const { generateTokens } = require('../utils/tokenUtils.js');
-const mongoose = require('mongoose');
-
-// TODO: Use bcrypt for password encryption/decryption
-
-// Connect to MongoDB
-const url = process.env.MONGODB_URI;
-mongoose.connect(url)
+const bcrypt = require('bcrypt');
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const db = mongoose.connection;
-    const user = await User.findOne({ email, password });
-    if (!user) 
-      return res.status(401).json({ message: 'Unauthorized' });
+    const foundUser = await User.findOne({ email });
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
 
-    const { accessToken, refreshToken } = generateTokens(user);
+    const isMatch = await bcrypt.compare(password, foundUser.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
 
-    res.cookie('refreshToken', refreshToken, 
-      { 
-        httpOnly: true, // accessible only by web server
-        secure: true, // https
-        sameSite: 'None', // corss-site cookie
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      });
+    const { accessToken, refreshToken } = generateTokens(foundUser);
 
-    // Send access token containing userId
-    res.json({ accessToken });
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: false, // Use true if using HTTPS
+      sameSite: 'Lax',
+      path: '/', 
+      maxAge: 3 * 60 * 1000 // 3 minutes
+    });
+    // Set the refresh token in the cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // accessible only by web server
+      secure: false, // https only in production
+      sameSite: 'Lax', // cross-site cookies
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send access token in the response body
+    res.json({ accessToken, id: foundUser._id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 exports.register = async (req, res) => {
   const { firstName, lastName, email, login, password } = req.body;
-  const newUser = new User({ firstName, lastName, email, login, password });
 
   try {
-    const db = mongoose.connection;
-    const result = await User.insertOne(newUser);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ firstName, lastName, email, login, password: hashedPassword });
+    const result = await newUser.save();
 
     const { accessToken, refreshToken } = generateTokens(result);
 
-    res.cookie('refreshToken', refreshToken, 
-      { 
-        httpOnly: true, 
-        secure: true, 
-        sameSite: 'Strict' 
-      });
-      
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: false, // Use true if using HTTPS
+      sameSite: 'Lax',
+      path: '/', 
+      maxAge: 3 * 60 * 1000 // 3 minutes
+    });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false, // Use true if using HTTPS
+      sameSite: 'Lax', // Consider 'Lax' if not cross-site
+      path: '/', 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     // Send access token containing userId
     res.status(201).json({ accessToken });
   } catch (error) {
@@ -59,9 +74,13 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.refreshToken = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(403).json({ message: 'Refresh token is required' });
+exports.refreshToken = (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.refreshToken) return res.status(403).json({ message: 'No refresh token found', cookies: cookies});
+
+  const refreshToken = cookies.refreshToken
+  console.log('REFRESH TOKEN: ', refreshToken)
 
   jwt.verify(
     refreshToken, 
@@ -74,93 +93,34 @@ exports.refreshToken = async (req, res) => {
         _id: decoded.userId,
         login: decoded.login
        });
-    const user = { id: decoded.userId };
+       
+    if (!foundUser) return res.status(403).json({ message: 'Unauthorized' });
 
     const accessToken = jwt.sign(
       { 
-        _id: decoded.userId,
-        login: decoded.login
+        _id: foundUser._id,
+        login: foundUser.login
        }, 
        process.env.ACCESS_TOKEN_SECRET, 
-       { expiresIn: '15m' }
+       { expiresIn: '3m' }
       );
-
+      
     res.json({ accessToken });
   });
 };
 
-exports.logout = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(204); // No content
+exports.logout = (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.refreshToken) return res.status(204).json({ message: 'No content' });
+
   res.clearCookie('refreshToken', 
     { 
       httpOnly: true, 
-      secure: true, 
-      sameSite: 'Strict' 
+      secure: false, 
+      sameSite: 'None',
+      path: '/' 
     });
-    
+
     res.json({'message' : 'Cookie cleared'});
 };
-
-// /* 
-// Login endpoint 
-
-// Request
-// {
-//   email: String
-//   password: String
-// }
-// Response
-// {
-//   id: _id
-//   login: String
-//   firstName: String
-//   lastName: String
-// }
-// */
-// app.post('/api/login', async (req, res) => {
-//     const { email, password } = req.body;
-  
-//     try {
-//       const db = client.db('journeyJournal');
-//       const user = await db.collection('user').findOne({ email, password });
-//       if (user) {
-//         res.status(200).json({ id: user._id, login: user.login, firstName: user.firstName, lastName: user.lastName });
-//       } else {
-//         res.status(404).json({ error: 'Invalid credentials' });
-//       }
-//     } catch (e) {
-//       res.status(500).json({ error: e.toString() });
-//     }
-//   });
-  
-//   /* 
-//   Register endpoint 
-  
-//   Request body
-//   {
-//     firstName: String
-//     lastName: String
-//     email: String
-//     login: String
-//     password: String
-//   }
-  
-//   Response
-//   {
-//     id: new id
-//     login: username
-//   }
-//   */
-//   app.post('/api/register', async (req, res) => {
-//     const { firstName, lastName, email, login, password } = req.body;
-//     const newUser = { firstName, lastName, email, login, password};
-  
-//     try {
-//       const db = client.db('journeyJournal');
-//       const result = await db.collection('user').insertOne(newUser);
-//       res.status(200).json({id: result.insertedId, login: login});
-//     } catch (e) {
-//       res.status(500).json({ error: e.toString() });
-//     }
-//   });
