@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 app.set('port', PORT);
 const corsOptions = {
-  origin: 'http://localhost:3000', // Replace with your frontend origin
+  origin: process.env.NODE_ENV === 'production' ? 'https://journey-journal-cop4331-71e6a1fdae61.herokuapp.com/' : 'http://localhost:3000',
   credentials: true, // Allow cookies to be sent
 };
 
@@ -36,12 +36,6 @@ mongoose.connect(url)
 });
 
 // CORS setup
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-//   next();
-// });
 
 app.use('/api/auth', authRoutes);
 app.use('/api', entryRoutes);
@@ -144,7 +138,8 @@ app.use('/api', entryRoutes);
 
 //   try {
 //     const db = mongoose.connection;
-//     const results = await db.collection('journalEntry').find({ title: { $regex: search, $options: 'i' } }).toArray();
+//     const results = await db.collection('journalEntry').find(
+//       { title: { $regex: search, $options: 'i' } }).toArray();
 //     res.status(200).json(results);
 //   } catch (e) {
 //     res.status(500).json({ error: e.toString() });
@@ -208,11 +203,6 @@ app.use('/api', entryRoutes);
 // Serve static files from the 'frontend/build' directory in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'frontend/build')));
-
-  // Wildcard route to serve index.html for all non-API requests
-  // app.get('*', (req, res) => {
-  //   res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  // });
 }
 
 // Start the server

@@ -44,7 +44,7 @@ exports.deleteEntryByID = async (req, res) => {
 
   try {
     const db = mongoose.connection;
-    const result = await db.collection('journalEntry').deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+    const result = await db.collection('journalEntry').deleteOne({ _id: new ObjectId(id) });
     if (result.deletedCount > 0) {
       res.status(200).send('Entry deleted successfully');
     } else {
@@ -80,7 +80,7 @@ exports.editEntryByID = async (req, res) => {
       return res.status(404).send('Entry not found');
     }
 
-    const newResult = await db.collection('journalEntry').findOne({ _id: new mongoose.Types.ObjectId(id) });
+    const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
 
     res.status(200).json(newResult);
   } catch (error) {
@@ -130,8 +130,7 @@ exports.searchEntries = async (req, res) => {
           { title: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } },
           { location: { $regex: search, $options: 'i' } }
-        ],
-      userId: userId
+        ]
     }).toArray();
 
     res.status(200).json(results);
