@@ -5,6 +5,8 @@ const ViewTrip = () => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
     
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
     function buildPathAPI(route, id) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route + id;
@@ -12,7 +14,8 @@ const ViewTrip = () => {
             return 'http://localhost:5001/' + route + id;
         }
     }
-
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -24,27 +27,79 @@ const ViewTrip = () => {
     const { id } = useParams();
     const [trip, setTrip] = useState(null);
 
-    useEffect(() => {
-        const fetchTrip = async () => {
-            try {
-                const response = await fetch(buildPathAPI('api/getEntry/', id), {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry', id));
-                }
-
-                const data = await response.json();
-                setTrip(data);
-            } catch (error) {
-                alert(error.toString());
+    // Call the auth refresh route to generate a new accessToken
+    // If the refreshToken is valid, a new accessToken is granted
+    // Else, the refreshToken is invalid and the user is logged out
+    const refreshToken = async () => {
+        try {
+            const response = await fetch(buildPathAPI('api/auth/refresh', ''), {
+                method: 'GET',
+                credentials: 'include'  // Include cookies with the request
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
             }
-        };
+        
+            const res = await response.json();
+            console.log('Refresh token response:', res);
+        
+            if (res.accessToken) {
+                console.log('New access token:', res.accessToken);
+                localStorage.setItem('accessToken', res.accessToken);
+                return res.accessToken;
+            } else {
+                console.error('Failed to refresh token:', res.message);
+                throw new Error('Failed to refresh token');
+            }
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            // Redirect to login or handle token refresh failure
+            // window.location.href = buildPath('');
+        }
+    };
 
+    const fetchTrip = async () => {
+        let accessToken = localStorage.getItem('accessToken');
+        
+        try {
+            let response = await fetch(buildPathAPI('api/getEntry/', id), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                credentials: 'include'  // Include cookies with the request
+            });
+
+            if (response.status === 403) {
+                // Token might be expired, try to refresh
+                let newToken = await refreshToken();
+                if (!newToken) {
+                    throw new Error('No token received');
+                }
+    
+                // Retry fetching with the new access token
+                response = await fetch(buildPathAPI('api/getEntry/', id), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    credentials: 'include'  // Include cookies with the request
+                });            
+            }
+
+            const data = await response.json();
+            setTrip(data);
+        } catch (error) {
+            alert(error.toString());
+        }
+    };
+
+    useEffect(() => {
         fetchTrip();
-    }, [id]);
+    }, []);
 
     const redirectTo = (route, id) => {
         const path = buildPath(`${route}${id}`);
@@ -57,11 +112,35 @@ const ViewTrip = () => {
 
     const handleDelete = async () => {
         alert('Please confirm you want to delete:' + id);
+        let accessToken = localStorage.getItem('accessToken');
         try {
-            await fetch(buildPathAPI('api/deleteEntry/', id), {
+            let response = await fetch(buildPathAPI('api/deleteEntry/', id), {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                credentials: 'include'  // Include cookies with the request
             });
+
+            if (response.status === 403) {
+                // Token might be expired, try to refresh
+                let newToken = await refreshToken();
+                if (!newToken) {
+                    throw new Error('No token received');
+                }
+    
+                // Retry fetching with the new access token
+                response = await fetch(buildPathAPI('api/deleteEntry/', id), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    credentials: 'include'  // Include cookies with the request
+                });            
+            }
+
             redirectTo('mytrips', '');
         } catch (e) {
             alert(e.toString());

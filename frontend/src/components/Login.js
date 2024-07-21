@@ -4,6 +4,8 @@ import "./Login.css";
 const Login = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -12,6 +14,8 @@ const Login = () => {
         }
     }
 
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -43,8 +47,6 @@ const Login = () => {
                 credentials: 'include'
             });
 
-            alert('doIt() ' + email + ' ' + password);
-
             var res = JSON.parse(await response.text());
 
             if (!res.id) {
@@ -52,11 +54,8 @@ const Login = () => {
             }
             else {
                 localStorage.setItem('accessToken', res.accessToken);
-                setMessage(JSON.stringify(res));
-                // document.cookie = "testCookie=testing; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
-                console.log(document.cookie);
-                // window.location.href = 'http://localhost:3000/home'
-                // redirectTo('home');
+                setMessage('');
+                redirectTo('home');
             }
 
         } catch (e) {

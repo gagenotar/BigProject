@@ -5,6 +5,8 @@ const MyTrips = () => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -13,6 +15,8 @@ const MyTrips = () => {
         }
     }
 
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -24,40 +28,42 @@ const MyTrips = () => {
     var search = '';
     var userId = '';
 
-    const [message,setMessage] = useState('');
     const [myEntriesList, setMyEntriesList] = useState([]);
 
+    // Call the auth refresh route to generate a new accessToken
+    // If the refreshToken is valid, a new accessToken is granted
+    // Else, the refreshToken is invalid and the user is logged out
     const refreshToken = async () => {
         try {
-          const response = await fetch(buildPathAPI('api/auth/refresh'), {
-            method: 'GET',
-            credentials: 'include'  // Include cookies with the request
-          });
-      
-          if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-          }
-      
-          const res = await response.json();
-          console.log('Refresh token response:', res);
-      
-          if (res.accessToken) {
-            console.log('New access token:', res.accessToken);
-            localStorage.setItem('accessToken', res.accessToken);
-            return res.accessToken;
-          } else {
-            console.error('Failed to refresh token:', res.message);
-            throw new Error('Failed to refresh token');
-          }
+            const response = await fetch(buildPathAPI('api/auth/refresh'), {
+                method: 'GET',
+                credentials: 'include'  // Include cookies with the request
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+        
+            const res = await response.json();
+            console.log('Refresh token response:', res);
+        
+            if (res.accessToken) {
+                console.log('New access token:', res.accessToken);
+                localStorage.setItem('accessToken', res.accessToken);
+                return res.accessToken;
+            } else {
+                console.error('Failed to refresh token:', res.message);
+                throw new Error('Failed to refresh token');
+            }
         } catch (error) {
-          console.error('Error refreshing token:', error);
-          // Redirect to login or handle token refresh failure
-          // window.location.href = buildPath('');
+            console.error('Error refreshing token:', error);
+            // Redirect to login or handle token refresh failure
+            window.location.href = buildPath('');
         }
-      };
+    };
       
     
-
+    // Load all entries that belong to a certain userId
     const fetchEntries = async () => {
         const obj = { search: '', userId: '6671b214613f5493b0afe5ca' }; // Example userId
         const js = JSON.stringify(obj);
@@ -78,7 +84,7 @@ const MyTrips = () => {
                 // Token might be expired, try to refresh
                 let newToken = await refreshToken();
                 if (!newToken) {
-                    throw new Error('Error line 4', response);
+                    throw new Error('No token received');
                 }
     
                 // Retry fetching with the new access token
@@ -93,10 +99,6 @@ const MyTrips = () => {
                 });            
             }
     
-            if (response.status !== 200) {
-                throw new Error('Error line 6', response);
-            }
-    
             const res = await response.json();
             setMyEntriesList(res);
         } catch (e) {
@@ -104,11 +106,12 @@ const MyTrips = () => {
         }
     };
     
-
+    // Upon the page loading, fetch the user's entries
     useEffect(() => {
         fetchEntries();
     }, []);
 
+    // When the search input value changes, search user's entries with given query
     const searchMyEntries = async (event) => {
 
         event.preventDefault();
@@ -122,13 +125,36 @@ const MyTrips = () => {
 
         try
         {
-            const response = await fetch(buildPathAPI('api/searchMyEntries'),
-            {
+            let accessToken = localStorage.getItem('accessToken');
+        
+            let response = await fetch(buildPathAPI('api/searchMyEntries'), {
                 method: 'POST',
                 body: js,
-                headers:{'Content-Type': 'application/json'}
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                credentials: 'include'  // Include cookies with the request
             });
 
+            if (response.status === 403) {
+                // Token might be expired, try to refresh
+                let newToken = await refreshToken();
+                if (!newToken) {
+                    throw new Error('No token received');
+                }
+    
+                // Retry fetching with the new access token
+                response = await fetch(buildPathAPI('api/searchMyEntries'), {
+                    method: 'POST',
+                    body: js,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    credentials: 'include'
+                });            
+            }
             
             var res = JSON.parse(await response.text());
             setMyEntriesList(res);
@@ -139,6 +165,7 @@ const MyTrips = () => {
         }        
     }
 
+    // Redirect the user (used for getEntry/:id)
     const redirectTo = (route, id) => {
         const path = buildPath(`${route}${id}`);
         window.location.href = path;

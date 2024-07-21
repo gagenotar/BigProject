@@ -1,5 +1,6 @@
 const journalEntry = require('../models/JournalEntry.js');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb')
 
 /* 
 Add entry endpoint 
@@ -71,7 +72,7 @@ exports.editEntryByID = async (req, res) => {
     const { id } = req.params;
     const db = mongoose.connection;
 
-    const filter = { _id: new mongoose.Types.ObjectId(id) };
+    const filter = { _id: new ObjectId(id) };
     const update = { $set: req.body };
 
     const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
@@ -96,9 +97,10 @@ Response
 */
 exports.getEntryByID = async (req, res) => {
   try {
-    console.log(`Received request for trip with id: ${req.params.id}`);
+    let id = new ObjectId(req.params.id)
+    console.log(`Received request for trip with id: ${id}`);
     const db = mongoose.connection;
-    const entry = await db.collection('journalEntry').findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+    const entry = await db.collection('journalEntry').findOne({ _id: id });
 
     if (!entry) {
       res.status(404).json({ error: 'Entry not found' });
