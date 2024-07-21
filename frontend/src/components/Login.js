@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import "./Login.css";
 
 const Login = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
-    const navigate = useNavigate();
 
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -14,6 +14,8 @@ const Login = () => {
         }
     }
 
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -36,15 +38,14 @@ const Login = () => {
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(buildPathAPI('api/login'), {
+            const response = await fetch(buildPathAPI('api/auth/login'), {
                 method: 'POST',
                 body: js,
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
-
-            alert('doIt() ' + email + ' ' + password);
 
             var res = JSON.parse(await response.text());
 
@@ -52,7 +53,8 @@ const Login = () => {
                 setMessage('User/Password combination incorrect');
             }
             else {
-                setMessage(JSON.stringify(res));
+                localStorage.setItem('accessToken', res.accessToken);
+                setMessage('');
                 redirectTo('home');
             }
 
