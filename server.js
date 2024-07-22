@@ -275,28 +275,6 @@ Request
 Response
 results[]
 */
-// app.post('/api/searchMyEntries', async (req, res) => {
-//   const { search, userId } = req.body;
-
-//   try {
-//     const db = client.db('journeyJournal');
-//     const results = await db.collection('journalEntry').find({
-//       $or: [
-//         { title: { $regex: search, $options: 'i' } },
-//         { description: { $regex: search, $options: 'i' } },
-//         { 'location.street': { $regex: search, $options: 'i' } },
-//         { 'location.city': { $regex: search, $options: 'i' } },
-//         { 'location.state': { $regex: search, $options: 'i' } },
-//         { 'location.country': { $regex: search, $options: 'i' } }
-//       ],
-//       userId: userId
-//     }).toArray();
-//     res.status(200).json(results);
-//   } catch (e) {
-//     res.status(500).json({ error: e.toString() });
-//   }
-// });
-
 app.post('/api/searchMyEntries', async (req, res) => {
   const { search, userId } = req.body;
 
