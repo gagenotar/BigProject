@@ -193,26 +193,62 @@ Response
   updated entry
 }
 */
-app.put('/api/editEntry/:id', async (req, res) => {
+// app.put('/api/editEntry/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const db = client.db('journeyJournal');
+
+//     const filter = { _id: new ObjectId(id) };
+//     const update = { $set: req.body };
+
+//     const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
+//     if (!result) {
+//       return res.status(404).send('Entry not found');
+//     }
+
+//     const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+
+//     res.status(200).json(newResult);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+app.put('/api/editEntry/:id', upload.single('image'), async (req, res) => {
   try {
-    const { id } = req.params;
-    const db = client.db('journeyJournal');
+      const { id } = req.params;
+      const db = client.db('journeyJournal');
 
-    const filter = { _id: new ObjectId(id) };
-    const update = { $set: req.body };
+      const update = {
+          title: req.body.title,
+          description: req.body.description,
+          location: JSON.parse(req.body.location),
+          rating: parseInt(req.body.rating, 10),
+      };
 
-    const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
-    if (!result) {
-      return res.status(404).send('Entry not found');
-    }
+      if (req.file) {
+          update.image = req.file.path;
+      }
 
-    const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = { $set: update };
 
-    res.status(200).json(newResult);
+      const result = await db.collection('journalEntry').findOneAndUpdate(filter, updateDoc);
+      if (!result) {
+          return res.status(404).send('Entry not found');
+      }
+
+      const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+
+      res.status(200).json(newResult);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
   }
 });
+
+
+
+
 
 /* 
 Search all entries endpoint 
