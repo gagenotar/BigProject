@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
     // Set the refresh token in the cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // accessible only by web server
-      secure: false, // https only in production
+      secure: true, // https only in production
       sameSite: 'Lax', // cross-site cookies
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
     // Set the refresh token in the cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // accessible only by web server
-      secure: false, // https only in production
+      secure: true, // https only in production
       sameSite: 'Lax', // cross-site cookies
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -97,7 +97,7 @@ exports.logout = (req, res) => {
 
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: 'None',
     path: '/'
   });
