@@ -42,6 +42,7 @@ const HomePage = ({ loggedInUserId }) => {
           <div className='post-top-row'>
             <div className="profile-details">
               <div className="username">{post.username || 'Anonymous'}</div>
+              <div className="date">{new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
             </div>
             <button 
               type="button" 

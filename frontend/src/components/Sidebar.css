@@ -117,7 +117,8 @@ nav.open .sidebar {
 .nav-link,
 .home-icon,
 .trips-icon, 
-.logout-icon {
+.logout-icon,
+.user-icon {
   margin-right: 14px;
   font-size: 30px;
   color: #2e2e2e;

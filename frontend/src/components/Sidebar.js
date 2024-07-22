@@ -84,7 +84,8 @@ const Sidebar = () => {
                             </li>
                             <li className="list">
                                 <Link to="/profile" className="nav-link" onClick={closeSidebar}>
-                                    <img className="my-user-picture" src="https://via.placeholder.com/150" alt="User" />
+                                    <i className="bi bi-person icon user-icon regular-icon"></i>
+                                    <i className="bi bi-person-circle icon user-icon filled-icon" style={{ display: 'none' }}></i>
                                     <span className="link">Profile</span>
                                 </Link>
                             </li>

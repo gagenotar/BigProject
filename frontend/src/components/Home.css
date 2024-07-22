@@ -21,7 +21,6 @@ body {
 .profile-details {
     display: flex;
     flex-direction: row;
-    margin-bottom: 10px;
 }
 .username {
     display: flex;
@@ -29,6 +28,11 @@ body {
     align-items: center;
     font-size: 16px;
     font-weight: 700;
+    padding-right: 8px;
+}
+.date {
+    font-size: 14px;
+    padding-top: 5px;
 }
 .title-rating {
     display: flex;
@@ -65,12 +69,12 @@ body {
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
 }
-.post-image {
+img.post-image {
     /* set image size. adjust when post sizing is enabled. */
     height: 250px;
     width: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 2px;
 }
 .view-button-home {
     background: none;
