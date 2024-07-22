@@ -23,18 +23,6 @@ body {
     flex-direction: row;
     margin-bottom: 10px;
 }
-.my-user-picture,
-.user-picture {
-    height: 30px;
-    width: 30px;
-    border-radius: 50px;
-}
-.my-user-picture {
-    margin-right: 14px;
-}
-.user-picture {
-    margin-right: 10px;
-}
 .username {
     display: flex;
     justify-content: center;
@@ -83,4 +71,15 @@ body {
     width: 100%;
     object-fit: cover;
     border-radius: 8px;
+}
+.view-button-home {
+    background: none;
+    color: black;
+    font-size: 20px;
+    padding: 0;
+    padding-right: 4px;
+}
+.view-button-home:hover {
+    background: none;
+    color: gray;
 }

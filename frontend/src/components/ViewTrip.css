@@ -37,3 +37,7 @@ img.post-image-view {
     border-radius: 10px;
     margin-bottom: 20px;
 }
+
+.username {
+    justify-content: left;
+}

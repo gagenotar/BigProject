@@ -41,16 +41,15 @@ const HomePage = ({ loggedInUserId }) => {
         <div className="card card-medium" key={post._id}>
           <div className='post-top-row'>
             <div className="profile-details">
-              <img className="user-picture" src={post.userPicture || 'https://via.placeholder.com/50'} alt="User" />
               <div className="username">{post.username || 'Anonymous'}</div>
             </div>
             <button 
               type="button" 
-              className="btn btn-secondary" 
+              className="view-button-home" 
               onClick={() => redirectToView(post._id)}
               id='single-view-btn'
             >
-              View
+              <i className="bi bi-eye"></i>
             </button>
           </div>
           <div className="image-row">
@@ -60,14 +59,10 @@ const HomePage = ({ loggedInUserId }) => {
             <div className="title">{post.title}</div>
             <div className="rating">{post.rating ? post.rating : 'No rating yet'}/5</div>
           </div>
-          <div className="date">Date: {new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
           <div className="location">
             {post.location && (
               <>
-                <div>{post.location.street}</div>
-                <div>{post.location.city}</div>
-                <div>{post.location.state}</div>
-                <div>{post.location.country}</div>
+                <div>{post.location.street}, {post.location.city}, {post.location.state}, {post.location.country}</div>
               </>
             )}
           </div>

@@ -141,10 +141,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                     <div className="location">
                         {trip.location && (
                         <>
-                            <div>{trip.location.street}</div>
-                            <div>{trip.location.city}</div>
-                            <div>{trip.location.state}</div>
-                            <div>{trip.location.country}</div>
+                            <div>{trip.location.street}, {trip.location.city}, {trip.location.state}, {trip.location.country}</div>
                         </>
                         )}
                     </div>

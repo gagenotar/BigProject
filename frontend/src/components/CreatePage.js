@@ -94,7 +94,6 @@ const CreatePage = () => {
       <div className="main-content">
         <div className="card-centered">
           <div className="profile-details">
-            <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
             <div className="username">username</div>
           </div>
           <form onSubmit={handleSubmit} className="form-container">
