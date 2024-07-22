@@ -40,6 +40,50 @@ mongoose.connect(url)
 app.use('/api/auth', authRoutes);
 app.use('/api', entryRoutes);
 
+// profile endpoint
+app.get('/api/profile/:id', async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const db = client.db('journeyJournal');
+      const user = await db.collection('user').findOne({ _id: new ObjectId(id) });
+      if (user) {
+        res.status(200).json({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          login: user.login,
+        });
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (e) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  // Update Profile Endpoint
+  app.put('/api/update-profile/:id', async (req, res) => {
+    const { id } = req.params;
+    const { login, password } = req.body;
+  
+    try {
+      const db = client.db('journeyJournal');
+      const result = await db.collection('user').updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { login, password } }
+      );
+      if (result.modifiedCount > 0) {
+        res.status(200).json({ message: 'Profile updated successfully' });
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (e) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+
 // /* 
 // Add entry endpoint 
 // Request body
