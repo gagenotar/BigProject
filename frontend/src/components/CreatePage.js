@@ -93,13 +93,10 @@ const CreatePage = () => {
       <Sidebar />
       <div className="main-content">
         <div className="card-centered">
-          <div className="profile-details">
-            <div className="username">username</div>
-          </div>
           <form onSubmit={handleSubmit} className="form-container">
             <div className="form-row">
               <div className="form-group image-upload">
-                <label htmlFor="image">*Upload Picture:</label>
+                <label htmlFor="image">*Upload an image below:</label>
                 <input
                   type="file"
                   id="image"
@@ -173,7 +170,7 @@ const CreatePage = () => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-            <button type="submit">Submit</button>
+            <button className='submit-button' type="submit">Create Post</button>
           </form>
         </div>
       </div>

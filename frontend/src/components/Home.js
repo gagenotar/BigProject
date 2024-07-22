@@ -67,7 +67,7 @@ const HomePage = ({ loggedInUserId }) => {
               </>
             )}
           </div>
-          <div className="description">{post.description || 'No description available'}</div>
+          {/* <div className="description">{post.description || 'No description available'}</div> */}
         </div>
       ))}
     </div>
