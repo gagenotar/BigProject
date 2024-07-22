@@ -202,7 +202,15 @@ app.use('/api', entryRoutes);
 
 // Serve static files from the 'frontend/build' directory in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  // Set static folder
+  app.use(express.static('frontend/build'));
+
+  app.get('*', (req, res) => 
+ {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+
 }
 
 // Start the server
