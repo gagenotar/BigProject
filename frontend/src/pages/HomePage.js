@@ -5,11 +5,11 @@ import '../components/Home.css';
 import '../components/Sidebar.css';
 import '../components/Layout.css';
 
-const HomePage = () => {
+const HomePage = ({ loggedInUserId }) => {
     return (
         <div className="homepage">
             <Sidebar />
-            <Home />
+            <Home loggedInUserId={loggedInUserId} />
         </div>
     );
 };

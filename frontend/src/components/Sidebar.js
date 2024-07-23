@@ -65,7 +65,7 @@ const Sidebar = () => {
 
                         <div className="bottom-content">
                             <li className="list">
-                                <Link to="#" className="nav-link" onClick={closeSidebar}>
+                                <Link to="/" className="nav-link" onClick={closeSidebar}>
                                     <i className="bi bi-box-arrow-left logout-icon regular-icon"></i>
                                     <i className="bi bi-escape logout-icon filled-icon" style={{ display: 'none' }}></i>
                                     <span className="link logout-link">Logout</span>

@@ -1,16 +1,15 @@
 :root {
-    --card_width: 380px;
+    --card_width: 340px;
     --row_increment: 10px;
     --card_border_radius: 16px;
     --card_small: 40;
-    --card_medium: 51;
+    --card_medium: 47;
     --card_large: 59;
 }
 
 .pin-container {
     margin: 0;
-    margin-top: 95px;
-    padding-top: 6px;
+    padding-top: 90px;
     width: 100vw;
     position: absolute;
     left: 50%;
@@ -22,11 +21,12 @@
     background-color: #EFEFE6;
 }
 
-.card {
+div.card {
     margin: 12px 12px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.066);
     padding: 15px 15px;
     border-radius: 20px;
+    border: none;
     box-sizing: border-box;
     background-color: white;
 }

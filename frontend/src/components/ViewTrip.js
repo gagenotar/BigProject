@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
-const ViewTrip = () => {
+const ViewTrip = ({ loggedInUserId }) => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
     
@@ -25,6 +25,8 @@ const ViewTrip = () => {
     }
 
     const { id } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
     const [trip, setTrip] = useState(null);
 
     // Call the auth refresh route to generate a new accessToken
@@ -110,6 +112,15 @@ const ViewTrip = () => {
         redirectTo('editEntry/', id)
     };
 
+    const handleDone = () => {
+        const fromPage = new URLSearchParams(location.search).get('from');
+        if (fromPage === 'home') {
+            navigate('/home');
+        } else {
+            navigate('/mytrips');
+        }
+    };
+
     const handleDelete = async () => {
         alert('Please confirm you want to delete:' + id);
         let accessToken = localStorage.getItem('accessToken');
@@ -141,7 +152,7 @@ const ViewTrip = () => {
                 });            
             }
 
-            redirectTo('mytrips', '');
+            handleDone();
         } catch (e) {
             alert(e.toString());
             console.error(e);
@@ -156,45 +167,62 @@ const ViewTrip = () => {
                 <div className='row'>
                     <div className='col-sm-6'>
                         <div className='row justify-content-start'>
-                            <div className='col'>Username</div>
-                            <div className='col text-body-secondary'>Date</div>
+                            <div className='col username'>{trip.username || 'Unknown User'}</div> {/* Display owner's name */}
+                            <div className='col text-body-secondary'>Date: {new Date(trip.date).toLocaleDateString()}</div> {/* Display date */}
                         </div>
                     </div>
                     <div className='col-sm-6'>
-                        <div className='row mb-3' id='action-btns'> 
-                            <button 
-                            type='button'
-                            className='btn btn-primary' 
-                            onClick={handleEdit}
-                            >Edit</button>
-                            <button 
-                            type='button'
-                            className='btn btn-danger'
-                            onClick={handleDelete}
-                            >Delete</button>
-                            <button 
-                            type='button'
-                            className='btn btn-secondary'
-                            onClick={() => {redirectTo('mytrips', '')}}
-                            >Done</button>
-                        </div>
+                        {loggedInUserId === trip.userId && (
+                            <div className='row mb-3' id='action-btns'> 
+                                <button 
+                                type='button'
+                                className='btn btn-primary' 
+                                onClick={handleEdit}
+                                >Edit</button>
+                                <button 
+                                type='button'
+                                className='btn btn-danger'
+                                onClick={handleDelete}
+                                >Delete</button>
+                                <button 
+                                type='button'
+                                className='btn btn-secondary'
+                                onClick={handleDone}
+                                >Done</button>
+                            </div>
+                        )}
+                        {loggedInUserId !== trip.userId && (
+                            <div className='row mb-3' id='action-btns'> 
+                                <button 
+                                type='button'
+                                className='btn btn-secondary'
+                                onClick={handleDone}
+                                >Done</button>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='my-3 text-center'>img</div>
+                    <img className="post-image-view" src={`http://localhost:5001/${trip.image}`} alt={trip.title} />
                 </div>
                 <div className='row'>
                     <div className='col-8'>
-                        <h3>{trip.title}</h3>
+                        <h3 className='entry-title'>{trip.title}</h3>
                     </div>
                     <div className='col-4'>
                         <div className='row justify-content-end text-end'>
-                            <p id='rating-text'>Rating</p>
+                            <p id='rating-text'>Rating: {trip.rating}/5</p>
                         </div>
                     </div>
                 </div>
                 <div className='row'>
-                    <p className='text-body-secondary'>Location</p>
+                    <div className="location">
+                        {trip.location && (
+                        <>
+                            <div>{trip.location.street}, {trip.location.city}, {trip.location.state}, {trip.location.country}</div>
+                        </>
+                        )}
+                    </div>
                 </div>
                 <div className='row'>
                     <p>{trip.description}</p>

@@ -8,51 +8,52 @@ body {
 .top-page {
     position: fixed;
     background: rgba(239, 239, 230, 0.856);
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
     display: flex;
     flex-direction: row;
     width: 100%;
     z-index: 2;
 }
+.post-top-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .profile-details {
     display: flex;
     flex-direction: row;
-    margin-bottom: 10px;
-}
-.my-user-picture,
-.user-picture {
-    height: 30px;
-    width: 30px;
-    border-radius: 50px;
-}
-.my-user-picture {
-    margin-right: 14px;
-}
-.user-picture {
-    margin-right: 10px;
 }
 .username {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 16px;
+    font-weight: 700;
+    padding-right: 8px;
+}
+.date {
+    font-size: 14px;
+    padding-top: 5px;
 }
 .title-rating {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
-.large-image, .small-image, .medium-image {
+/* .large-image, .small-image, .medium-image {
     width: 100%;
     border-radius: 10px;
     height: auto;
     background-size: cover;
     background-position: center;
     margin-bottom: 10px;
-}
+} */
 .title {
     font-size: 22px; 
     font-weight: bold;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; 
+    -webkit-box-orient: vertical;
 }
 .rating {
     margin-left: 20px;
@@ -62,13 +63,29 @@ body {
     font-size: 14px;
 }
 .location {
-    padding-top: 3px;
     color: #727272;
     margin-bottom: 10px;
 }
-/* .description {
+.description {
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 1; 
+    -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
-} */
+}
+img.post-image {
+    height: 320px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+}
+.view-button-home {
+    background: none;
+    color: black;
+    font-size: 20px;
+    padding: 0;
+    padding-right: 4px;
+}
+.view-button-home:hover {
+    background: none;
+    color: gray;
+}

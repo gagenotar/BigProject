@@ -1,8 +1,10 @@
 const journalEntry = require('../models/JournalEntry.js');
+const Trip = require('../models/Trip'); 
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
-
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 /* 
 Add entry endpoint 
@@ -19,17 +21,29 @@ Response
 }
 */
 exports.addEntry = async (req, res) => {
-  const { userId, title, description, location, rating, image} = req.body;
-  const newTrip = new journalEntry({ userId, title, description, location, rating, image});
+  const { userId, title, description } = req.body;
+  const location = JSON.parse(req.body.location); // Parse the location field back into an object
+  const rating = parseInt(req.body.rating, 10); // Ensure rating is an integer
+  const date = new Date(); // Add the current date
+
+  const newTrip = { 
+    userId: new ObjectId(userId), 
+    title, 
+    description, 
+    location, 
+    rating, 
+    image: req.file ? req.file.path : null,
+    date
+  };
 
   try {
-    const db = client.db('journeyJournal');
+    const db = mongoose.connection;
     const result = await db.collection('journalEntry').insertOne(newTrip);
     res.status(200).json({ _id: result.insertedId });
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }  
-}
+};
 
 /* 
 Delete entry endpoint 
@@ -71,24 +85,55 @@ Response
 */
 exports.editEntryByID = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
+
+    // Validate ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
     const db = mongoose.connection;
 
-    const filter = { _id: new ObjectId(id) };
-    const update = { $set: req.body };
+    // Debug logging to check incoming request body
+    console.log('Request Body:', req.body);
+    console.log('Request File:', req.file);
 
-    const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
-    if (!result) {
+    // Handle cases where location or rating might be missing or invalid
+    const update = {
+      title: req.body.title || '', // Default to empty string if not provided
+      description: req.body.description || '', // Default to empty string if not provided
+      location: req.body.location ? JSON.parse(req.body.location) : {}, // Default to empty object if not provided
+      rating: req.body.rating ? parseInt(req.body.rating, 10) : 0, // Default to 0 if not provided
+    };
+
+    if (req.file) {
+      update.image = req.file.path;
+    }
+
+    const filter = { _id: new ObjectId(id) };
+    const updateDoc = { $set: update };
+
+    // Log the filter and updateDoc to verify correct values
+    console.log('Filter:', filter);
+    console.log('Update Document:', updateDoc);
+
+    const result = await db.collection('journalEntry').findOneAndUpdate(filter, updateDoc, { returnOriginal: false });
+
+    // Check if the document was found and updated
+    if (!result.value) {
       return res.status(404).send('Entry not found');
     }
 
+    // Fetch the updated entry
     const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
 
     res.status(200).json(newResult);
   } catch (error) {
+    // Log the error for debugging
+    console.error('Error:', error.message);
     res.status(500).json({ error: error.message });
-  }  
-}
+  }
+};
 
 /* 
 Get entry by ID endpoint 
@@ -100,15 +145,28 @@ Response
 exports.getEntryByID = async (req, res) => {
   try {
     let id = new ObjectId(req.params.id)
-    console.log(`Received request for trip with id: ${id}`);
     const db = mongoose.connection;
+
+    // Fetch the entry
     const entry = await db.collection('journalEntry').findOne({ _id: id });
+    console.log('Fetched entry:', entry); // Log the fetched entry
 
     if (!entry) {
-      res.status(404).json({ error: 'Entry not found' });
-    } else {
-      res.status(200).json(entry);
+      return res.status(404).json({ error: 'Entry not found' });
     }
+
+    // Fetch the user
+    const user = await db.collection('user').findOne({ _id: new ObjectId(entry.userId) });
+    console.log('Fetched user:', user); // Log the fetched user
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Combine the entry with the username and send the response
+    const response = { ...entry, username: user.login }; // 'login' field in the user collection
+    console.log('Response:', response); // Log the response
+    res.status(200).json(response);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
@@ -126,15 +184,34 @@ exports.searchEntries = async (req, res) => {
 
   try {
     const db = mongoose.connection;
-    const results = await db.collection('journalEntry').find({
-      $or:
-        [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { location: { $regex: search, $options: 'i' } }
-        ]
-    }).toArray();
-
+    const query = { 
+      ...(search ? { title: { $regex: search, $options: 'i' } } : {}), ...(userId ? { userId: new ObjectId(userId) } : {}) };
+    const results = await db.collection('journalEntry').aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      { $unwind: '$userDetails' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          location: 1,
+          image: 1,
+          date: 1,
+          rating: 1,
+          username: '$userDetails.login',
+          userPicture: '$userDetails.pfp'
+        }
+      },
+      { $sort: { date: -1 } } // Sort by date in descending order
+    ]).toArray();
     res.status(200).json(results);
   } catch (e) {
     res.status(500).json({ error: e.toString() });
@@ -156,15 +233,44 @@ exports.searchMyEntries = async (req, res) => {
 
   try {
     const db = mongoose.connection;
-    const results = await db.collection('journalEntry').find({
-      $or:
-        [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { location: { $regex: search, $options: 'i' } }
-        ],
-      userId: userId
-    }).toArray();
+    const query = { 
+      userId: new ObjectId(userId),
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { 'location.street': { $regex: search, $options: 'i' } },
+        { 'location.city': { $regex: search, $options: 'i' } },
+        { 'location.state': { $regex: search, $options: 'i' } },
+        { 'location.country': { $regex: search, $options: 'i' } }
+      ]
+    };
+
+    const results = await db.collection('journalEntry').aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      { $unwind: '$userDetails' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          location: 1,
+          image: 1,
+          date: 1,
+          rating: 1,
+          username: '$userDetails.login',
+          userPicture: '$userDetails.pfp'
+        }
+      },
+      { $sort: { date: -1 } } // Sort by date in descending order
+    ]).toArray();
 
     res.status(200).json(results);
   } catch (e) {
@@ -214,4 +320,24 @@ exports.updateProfileByID = async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
+}
+
+// Create a new trip
+exports.createEntry = async (req, res) => {
+  const { title, location, rating, description, image } = req.body;
+
+  try {
+    const newTrip = new Trip({
+      title,
+      location,
+      rating,
+      description,
+      image,
+    });
+
+    await newTrip.save();
+    res.status(201).json({ message: 'Trip created successfully', trip: newTrip });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating trip', error });
+  }  
 }
