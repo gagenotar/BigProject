@@ -4,11 +4,11 @@ import '../components/Sidebar.css';
 import MyTrips from '../components/MyTrips';
 import '../components/MyTrips.css';
 
-const MyTripsPage = () => {
+const MyTripsPage = ({ loggedInUserId }) => {
     return (
         <div className='container-fluid' id='my-trips-page'>
             <Sidebar />
-            <MyTrips />
+            <MyTrips loggedInUserId={loggedInUserId} />
         </div>
     );
 };
