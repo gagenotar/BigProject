@@ -83,11 +83,37 @@ const Login = () => {
                     </div>
                     <div className='row justify-content-center'>
                         <div className='col-sm-10 mb-4'>
-                            <span id='subtitle'><p className='fs-5'>Enter your email to login.</p></span>
+                            <p className='prompt'>Enter your email to login.</p>
+
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
-                        <div className='header'>Email Address*</div>
+                        <div class="form-floating mb-3">
+                            <input 
+                                type="email" 
+                                className="form-control form-control-sm" 
+                                id="floatingInput" 
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required 
+                            />
+                            <label for="floatingInput">Email address*</label>
+                        </div>
+                        <div class="form-floating">
+                            <input 
+                                type="password" 
+                                className="form-control form-control-sm" 
+                                id="floatingPassword" 
+                                placeholder="Password"
+                                value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required 
+                            />
+                            <label for="floatingPassword">Password*</label>
+                        </div>
+
+                        {/* <div className='header'>Email Address*</div>
                         <div className='input-group input-group-sm col-sm-12 mb-3'>
                             <input 
                                 type="email" 
@@ -108,7 +134,7 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required 
                             />
-                        </div>
+                        </div> */}
 
                         <div className='row justify-content-end mb-3'>
                             <div className='col-sm-6 justify-content-end text-end'>

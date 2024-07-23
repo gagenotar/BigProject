@@ -5,35 +5,19 @@
   align-items: center;
   padding: 10px;
   font-family: 'Inter';
+  background: #EFEFE6;
+  position: relative;
+  overflow: hidden;
 }
 
 #register-div {
-  max-width: 40vw;
+  max-width: 30vw;
   min-width: 300px;
   margin: auto;
   padding: 5vh;
-  border-radius: 40px;
+  border-radius: 30px;
   background: rgba(255, 255, 255, 0.70);
   box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
-}
-
-#brand-name-div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#brand-name {
-  margin: none;
-  color: #0C274E;
-  font-family: Anton;
-}
-
-#subtitle p {
-  color: #0C274E;
-  text-align: center;
-  font-style: normal;
-  font-weight: bold;
 }
 
 #register-form button {

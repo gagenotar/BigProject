@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./SignUp.css";
+import "./Login.css";
 
 const SignUp = () => {
 
@@ -88,17 +89,17 @@ const SignUp = () => {
     <div id='signup-component'>
         <div id='register-div'>
             <div className='container-sm text-center'>
-                <div className='row justify-content-center'>
-                    <div className='col-sm-5'>
-                        <img className='img-fluid' src='./brand-logo.png'></img>
+                <div className='app-details'>
+                        <div className=''>
+                            <img className='logo' src='./logo.png' alt="Brand Logo"></img>
+                        </div>
+                        <div className='' id='brand-name-div'>
+                            <h1 id='brand-name'>JOURNEY <br></br> JOURNAL</h1>
+                        </div>
                     </div>
-                    <div className='col-sm-5' id='brand-name-div'>
-                        <h1 id='brand-name'>JOURNEY <br></br> JOURNAL</h1>
-                    </div>
-                </div>
                 <div className='row justify-content-center'>
                     <div className='col-sm-10 mb-4'>
-                        <span id='subtitle'><p className='fs-5'>Sign up to post your adventures and share with friends.</p></span>
+                        <p className='prompt'>Sign up to post and share your adventures!</p>
                     </div>
                 </div>
                 <form className='row justify-content-center' id='register-form' onSubmit={doSignUp}>
@@ -161,8 +162,13 @@ const SignUp = () => {
                             title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
                         />
                     </div>
-                    <div className='col-sm-12 mb-3'>
-                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    {/* <div className='col-sm-12 mb-3'>
+                        <button type="submit" class="btn btn-primary" id="signup-btn">Sign Up</button>
+                    </div> */}
+                    <div className='row justify-content-center login-button'>
+                        <div className='col-sm-12 mb-3'>
+                            <button type="submit" className="btn btn-primary" id='signup-btn'>Sign Up</button>
+                        </div>
                     </div>
                 </form>
                 <div className='row justify-content-center'>
