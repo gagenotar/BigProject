@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
@@ -11,14 +11,16 @@ import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
 function App() {
+  const loggedInUserId = '6671b214613f5493b0afe5ca'; // Replace with actual logged-in user ID logic
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/mytrips" element={<MyTripsPage />} />
-        <Route path="/getEntry/:id" element={<ViewTripPage />} />
+        <Route path="/home" element={<HomePage loggedInUserId={loggedInUserId} />} />
+        <Route path="/mytrips" element={<MyTripsPage loggedInUserId={loggedInUserId} />} />
+        <Route path="/getEntry/:id" element={<ViewTripPage loggedInUserId={loggedInUserId} />} />
         <Route path="/editEntry/:id" element={<EditPage />} />
         <Route path="/create" element={<CreatePage />} />
         <Route path="/profile/" element={<ProfilePage />} />
