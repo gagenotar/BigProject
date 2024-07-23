@@ -246,10 +246,6 @@ app.put('/api/editEntry/:id', upload.single('image'), async (req, res) => {
   }
 });
 
-
-
-
-
 /* 
 Search all entries endpoint 
 
@@ -375,14 +371,29 @@ app.get('/api/getEntry/:id', async (req, res) => {
   try {
     console.log(`Received request for trip with id: ${req.params.id}`);
     const db = client.db('journeyJournal');
+    
+    // Fetch entry, user, 
     const entry = await db.collection('journalEntry').findOne({ _id: new ObjectId(req.params.id) });
+    console.log('Fetched entry:', entry); // Log the fetched entry
 
     if (!entry) {
-      res.status(404).json({ error: 'Entry not found' });
-    } else {
-      res.status(200).json(entry);
+      return res.status(404).json({ error: 'Entry not found' });
     }
+
+    // Fetch the user
+    const user = await db.collection('user').findOne({ _id: new ObjectId(entry.userId) });
+    console.log('Fetched user:', user); // Log the fetched user
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Combine the entry with the username and send the response
+    const response = { ...entry, username: user.login }; // 'login' field in the user collection
+    console.log('Response:', response); // Log the response
+    res.status(200).json(response);
   } catch (e) {
+    console.error('Error:', e.toString()); // Log any errors
     res.status(500).json({ error: e.toString() });
   }
 });

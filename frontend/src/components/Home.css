@@ -50,6 +50,10 @@ body {
 .title {
     font-size: 22px; 
     font-weight: bold;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; 
+    -webkit-box-orient: vertical;
 }
 .rating {
     margin-left: 20px;

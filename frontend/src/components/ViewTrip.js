@@ -11,13 +11,14 @@ const ViewTrip = ({ loggedInUserId }) => {
             return 'http://localhost:5001/' + route + id;
         }
     }
-    function buildPath(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:3000/' + route;
-        }
-    }
+
+    // function buildPath(route) {
+    //     if (process.env.NODE_ENV === 'production') {
+    //         return 'https://' + app_name + '.herokuapp.com/' + route;
+    //     } else {
+    //         return 'http://localhost:3000/' + route;
+    //     }
+    // }
 
     const { id } = useParams();
     const location = useLocation();
@@ -31,25 +32,25 @@ const ViewTrip = ({ loggedInUserId }) => {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to fetch trip data at: ' + buildPathAPI('api/getEntry/', id));
                 }
-
+                
                 const data = await response.json();
-                setTrip(data);
+                console.log('Fetched trip data:', data); // Log fetched data
+                setTrip(data); // Ensure the `data` includes `username`
             } catch (error) {
                 alert(error.toString());
             }
         };
-
         fetchTrip();
     }, [id]);
 
-    const redirectTo = (route) => {
-        const path = buildPath(route);
-        window.location.href = path;
-    };
+    // const redirectTo = (route) => {
+    //     const path = buildPath(route);
+    //     window.location.href = path;
+    // };
 
     const handleDone = () => {
         const fromPage = new URLSearchParams(location.search).get('from');
@@ -87,7 +88,6 @@ const ViewTrip = ({ loggedInUserId }) => {
                     <div className='col-sm-6'>
                         <div className='row justify-content-start'>
                             <div className='col username'>{trip.username || 'Unknown User'}</div> {/* Display owner's name */}
-                            {/* <div className='col text-body-secondary'>Date</div> */}
                             <div className='col text-body-secondary'>Date: {new Date(trip.date).toLocaleDateString()}</div> {/* Display date */}
                         </div>
                     </div>
@@ -123,7 +123,6 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    {/* <div className='my-3 text-center'>img</div> */}
                     <img className="post-image-view" src={`http://localhost:5001/${trip.image}`} alt={trip.title} />
                 </div>
                 <div className='row'>
@@ -137,7 +136,6 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    {/* <p className='text-body-secondary'>Location: {trip.location}</p> */}
                     <div className="location">
                         {trip.location && (
                         <>

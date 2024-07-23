@@ -53,12 +53,11 @@ html, body {
   margin-bottom: 0.5rem;
 }
 
-.image-preview {
-  margin-top: 10px;
-  max-width: 100%;
-  max-height: 200px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.preview-image {
+  width: 250px; 
+  height: 250px; 
+  object-fit: cover; 
+  border-radius: 5px; 
 }
 
 .details {
@@ -116,7 +115,8 @@ button {
   border: none;
 }
 
-.submit-button {
+.submit-button,
+.save-button {
   padding: 10px 15px;
   background-color: #0D6EFD;
   color: white;

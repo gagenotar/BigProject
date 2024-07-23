@@ -86,7 +86,7 @@ const MyTrips = ({ loggedInUserId }) => {
                 <div className="row post-from-list">
                     <div className="col-3">
                         <div className="row justify-content-center">
-                            <img className="post-image" src={`http://localhost:5001/${entry.image}`} alt={entry.title} />
+                            <img className="post-image-mytrips" src={`http://localhost:5001/${entry.image}`} alt={entry.title} />
                         </div>
                     </div>
                     <div className="col-9">
@@ -114,7 +114,7 @@ const MyTrips = ({ loggedInUserId }) => {
                                 </div>
                                 <div className="col-4">
                                     <div className="row justify-content-end text-end">
-                                        <p id="rating-text">Rating: {entry.rating ? entry.rating : 'No rating yet'}</p>
+                                        <p id="rating-text">{entry.rating ? entry.rating : 'No rating yet'}/5</p>
                                     </div>
                                 </div>
                             </div>
@@ -122,14 +122,11 @@ const MyTrips = ({ loggedInUserId }) => {
                                 <div className="location">
                                     {entry.location && (
                                         <>
-                                            <div>{entry.location.street}</div>
-                                            <div>{entry.location.city}</div>
-                                            <div>{entry.location.state}</div>
-                                            <div>{entry.location.country}</div>
+                                            <div>{entry.location.street}, {entry.location.city}, {entry.location.state}, {entry.location.country}</div>
                                         </>
                                     )}
                                 </div>
-                                <p>{entry.description}</p>
+                                <p className="mytrips-description">{entry.description}</p>
                             </div>
                         </div>
                     </div>
@@ -153,7 +150,7 @@ const MyTrips = ({ loggedInUserId }) => {
                             onKeyDown={(e) => { if (e.key === 'Enter') searchMyEntries(e); }}
                         />
                     </div>
-                    <div className="col-sm-2" id="active-link">
+                    {/* <div className="col-sm-2" id="active-link">
                         <a 
                             className="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" 
                             href="mytrips"       
@@ -176,7 +173,7 @@ const MyTrips = ({ loggedInUserId }) => {
                         >
                             Map view
                         </a>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="row justify-content-center">
                     <div className="col-sm-12">

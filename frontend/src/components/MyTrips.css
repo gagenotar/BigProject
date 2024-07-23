@@ -15,11 +15,16 @@
     border-radius: 40px;
 }
 
-/* 
-Manually set post height if needed:
-.post-from-list {
-    background-color: red;
-} */
+div.card.mb-4 {
+    height: 270px;
+}
+
+img.post-image-mytrips {
+    height: 240px;
+    object-fit: cover;
+    padding: 10px;
+    margin-left: 10px;
+}
 
 #my-trips-nav a {
     margin: 0;
@@ -60,4 +65,11 @@ Manually set post height if needed:
 
 .entry-title {
     font-weight: bold;
+}
+
+.mytrips-description {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
 }
