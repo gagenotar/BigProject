@@ -197,16 +197,13 @@ app.use('/api', entryRoutes);
 //   }
 // });
 
-// Serve static files from the 'frontend/build' directory in production
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the 'frontend/build' directory
-  app.use(express.static('frontend/build'));
+// Serve static files from the build directory
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-  // Handle all other routes by serving the React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
+// Serve the index.html file on all routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/build/index.html'));
+});
 
 
 // Start the server
