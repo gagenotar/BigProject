@@ -18,14 +18,13 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent
 };
 
+// CORS setup
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser()); 
 
 // Connect to MongoDB
 const url = process.env.MONGODB_URI;
-const { MongoClient, ObjectId } = require('mongodb')
-const client = new MongoClient(url)
 mongoose.connect(url)
 .then(() => {
   console.log('Connected to MongoDB');
@@ -35,54 +34,8 @@ mongoose.connect(url)
   process.exit(1);
 });
 
-// CORS setup
-
 app.use('/api/auth', authRoutes);
 app.use('/api', entryRoutes);
-
-// profile endpoint
-app.get('/api/profile/:id', async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const db = client.db('journeyJournal');
-      const user = await db.collection('user').findOne({ _id: new ObjectId(id) });
-      if (user) {
-        res.status(200).json({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          login: user.login,
-        });
-      } else {
-        res.status(404).json({ error: 'User not found' });
-      }
-    } catch (e) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-  
-  // Update Profile Endpoint
-  app.put('/api/update-profile/:id', async (req, res) => {
-    const { id } = req.params;
-    const { login, password } = req.body;
-  
-    try {
-      const db = client.db('journeyJournal');
-      const result = await db.collection('user').updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { login, password } }
-      );
-      if (result.modifiedCount > 0) {
-        res.status(200).json({ message: 'Profile updated successfully' });
-      } else {
-        res.status(404).json({ error: 'User not found' });
-      }
-    } catch (e) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
 
 // /* 
 // Add entry endpoint 
@@ -244,10 +197,14 @@ app.get('/api/profile/:id', async (req, res) => {
 //   }
 // });
 
-// Serve static files from the 'frontend/build' directory in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
-}
+// Serve static files from the build directory
+app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+// Serve the index.html file on all routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/build/index.html'));
+});
+
 
 // Start the server
 app.listen(PORT, () => {

@@ -169,3 +169,46 @@ exports.searchMyEntries = async (req, res) => {
     res.status(500).json({ error: e.toString() });
   }
 }
+
+// profile endpoint
+exports.profileByID = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const db = mongoose.connection;
+    const user = await db.collection('user').findOne({ _id: new ObjectId(id) });
+    if (user) {
+      res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        login: user.login,
+      });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+// Update Profile Endpoint
+exports.updateProfileByID = async (req, res) => {
+  const { id } = req.params;
+  const { login, password } = req.body;
+
+  try {
+    const db = mongoose.connection;
+    const result = await db.collection('user').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { login, password } }
+    );
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Profile updated successfully' });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

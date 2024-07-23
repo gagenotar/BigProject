@@ -23,4 +23,10 @@ router.route('/searchEntries')
 router.route('/searchMyEntries')
   .post(entryController.searchMyEntries)
 
+router.route('/profile/:id')
+  .get(entryController.profileByID)
+
+router.route('/updateProfile/:id')
+  .put(entryController.updateProfileByID)
+
 module.exports = router;
