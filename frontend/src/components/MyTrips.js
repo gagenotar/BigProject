@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "./MyTrips.css";
 
-const MyTrips = () => {
+const MyTrips = ({loggedInUserId}) => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
@@ -25,8 +25,8 @@ const MyTrips = () => {
         }
     }
 
-    var search = '';
-    var userId = '';
+    const [search, setSearch] = useState('');
+    const userId = loggedInUserId; // Use the provided loggedInUserId prop
 
     const [myEntriesList, setMyEntriesList] = useState([]);
 
@@ -65,7 +65,10 @@ const MyTrips = () => {
     
     // Load all entries that belong to a certain userId
     const fetchEntries = async () => {
-        const obj = { search: '', userId: '6671b214613f5493b0afe5ca' }; // Example userId
+        const obj = { 
+            search: search, 
+            userId: userId 
+        };
         const js = JSON.stringify(obj);
         let accessToken = localStorage.getItem('accessToken');
     
@@ -118,8 +121,8 @@ const MyTrips = () => {
         		
         var obj = 
         {
-            search: search.value, 
-            userId: '6671b214613f5493b0afe5ca'
+            search: search, 
+            userId: userId
         };
         var js = JSON.stringify(obj);
 
@@ -176,13 +179,13 @@ const MyTrips = () => {
             <div className='card mb-4' key={index}>
                 <div className='row'>
                     <div className='col-3'>
-                        <div className='row justify-content-center'>img</div>
+                        <img className="post-image-mytrips" src={`http://localhost:5001/${entry.image}`} alt={entry.title} />
                     </div>
                     <div className='col-9'>
                         <div className='card-body text-start'>
                             <div className='row align-items-center mb-3'>
                                 <div className='col text-body-secondary'>
-                                    Date
+                                    {entry.date ? new Date(entry.date).toLocaleDateString() : 'Invalid Date'}
                                 </div>
                                 <div className='col'>
                                     <div className='row justify-content-end'>
@@ -197,16 +200,23 @@ const MyTrips = () => {
                             </div>
                             <div className='row'>
                                 <div className='col-8'>
-                                    <h3>{entry.title}</h3>
+                                    <h3 className='entry-title'>{entry.title}</h3>
                                 </div>
                                 <div className='col-4'>
                                     <div className='row justify-content-end text-end'>
-                                        <p id='rating-text'>Rating</p>
+                                        <p id="rating-text">{entry.rating ? entry.rating : 'No rating yet'}/5</p>
                                     </div>
                                 </div>
                             </div>
                             <div className='row'>
-                                <p>{entry.description}</p>
+                                <div className="location">
+                                    {entry.location && (
+                                        <>
+                                            <div>{entry.location.street}, {entry.location.city}, {entry.location.state}, {entry.location.country}</div>
+                                        </>
+                                    )}
+                                </div>
+                                <p className="mytrips-description">{entry.description}</p>
                             </div>
                         </div>
                     </div>
@@ -225,11 +235,12 @@ const MyTrips = () => {
                             type="text" 
                             id="entry-search-bar" 
                             placeholder="Search..." 
-                            ref={(c) => search = c} 
-                            onChange={searchMyEntries}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') searchMyEntries(e); }}
                         />
                     </div>
-                    <div className='col-sm-2' id='active-link'>
+                    {/* <div className='col-sm-2' id='active-link'>
                         <a 
                         className='link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover' 
                         href='mytrips'       
@@ -244,7 +255,7 @@ const MyTrips = () => {
                         <a className='link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover' 
                         href='mytrips-map'
                         >Map view</a>
-                    </div>
+                    </div> */}
                 </div>
                 <div className='row justify-content-center'>
                     <div className='col-sm-12'>
