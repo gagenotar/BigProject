@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 const crypto = require('crypto');
-const transporter = require('./mailer');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -20,77 +20,124 @@ client.connect().catch(err => {
   process.exit(1);
 });
 
-// CORS setup
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-  next();
+client.connect(err => {
+  if (err) {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
+  }
+  console.log('Connected to MongoDB');
 });
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
 
-// Generate a verification token
-const generateToken = () => {
-  return crypto.randomBytes(32).toString('hex');
-};
-
-// Register endpoint
 app.post('/api/register', async (req, res) => {
-    const { login, password, firstName, lastName, email } = req.body; // Include email
-    const verificationToken = generateToken();
-    const newUser = { login, password, firstName, lastName, email, verified: false, verificationToken };
-  
-    try {
-      const db = client.db('journeyJournal');
-      const result = await db.collection('user').insertOne(newUser);
-  
-      const mailOptions = {
-        from: process.env.EMAIL, // Sender's email address
-        to: email, // Recipient's email address
-        subject: 'Verify your email',
-        text: `Please verify your email by clicking the following link: ${process.env.BASE_URL}/verify-email?token=${verificationToken}`
-      };
-  
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-          return res.status(500).json({ error: 'Error sending verification email' });
-        }
-        console.log('Email sent: ' + info.response);
-        res.status(200).json({ _id: result.insertedId, login });
-      });
-    } catch (e) {
-      console.error('Error during registration:', e);
-      res.status(500).json({ error: e.toString() });
-    }
-  });
-  
-
-// Email verification endpoint
-app.get('/api/verify-email', async (req, res) => {
-  const { token } = req.query;
+  const { login, password, firstName, lastName, email } = req.body;
+  const newUser = { login, password, firstName, lastName, email };
 
   try {
     const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({ verificationToken: token });
-
-    if (!user) {
-      return res.status(404).json({ error: 'Invalid verification token' });
+    const existingUser = await db.collection('user').findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
     }
 
-    await db.collection('user').updateOne({ _id: user._id }, { $set: { verified: true }, $unset: { verificationToken: "" } });
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const result = await db.collection('user').insertOne({ ...newUser, verificationCode });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'JourneyJournal Email Verification',
+      text: `Your verification code is: ${verificationCode}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error sending email' });
+      } else {
+        res.status(200).json({ message: 'Verification code sent to email' });
+      }
+    });
+
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
+app.post('/api/verify-code', async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({ email });
+
+    if (!user || user.verificationCode !== code) {
+      return res.status(400).json({ message: 'Invalid code' });
+    }
+
+    user.isVerified = true;
+    user.verificationCode = null;
+    await db.collection('user').updateOne(
+      { email },
+      { $set: { isVerified: true, verificationCode: null } }
+    );
+
     res.status(200).json({ message: 'Email verified successfully' });
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
 });
+
+// Additional endpoints
+
+app.get('/api/profile/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({ _id: new ObjectId(id) });
+    if (user) {
+      res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        login: user.login,
+      });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update Profile Endpoint
+app.put('/api/update-profile/:id', async (req, res) => {
+  const { id } = req.params;
+  const { login, password } = req.body;
+
+  try {
+    const db = client.db('journeyJournal');
+    const result = await db.collection('user').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { login, password } }
+    );
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Profile updated successfully' });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Login endpoint
 app.post('/api/login', async (req, res) => {
   const { login, password } = req.body;
@@ -107,7 +154,6 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: e.toString() });
   }
 });
-
 
 // Add entry endpoint
 app.post('/api/addEntry', async (req, res) => {
@@ -136,7 +182,7 @@ app.delete('/api/deleteEntry/:id', async (req, res) => {
       res.status(404).send('Entry not found');
     }
   } catch (e) {
-    res.status(500).json({ error: e.toString() });
+    res.status500.json({ error: e.toString() });
   }
 });
 
