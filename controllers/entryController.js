@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 
+
 /* 
 Add entry endpoint 
 Request body
@@ -171,7 +172,7 @@ exports.searchMyEntries = async (req, res) => {
   }
 }
 
-// profile endpoint
+// Get profile endpoint
 exports.profileByID = async (req, res) => {
   const { id } = req.params;
 
