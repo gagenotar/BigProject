@@ -54,8 +54,10 @@ const Login = () => {
             }
             else {
                 localStorage.setItem('accessToken', res.accessToken);
-                setMessage('');
-                redirectTo('home');
+                localStorage.setItem('userId', res.id);
+                let userId = localStorage.getItem('userId');
+                setMessage(userId);
+                // redirectTo('home');
             }
 
         } catch (e) {

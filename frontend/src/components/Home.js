@@ -28,6 +28,7 @@ const HomePage = ({ loggedInUserId }) => {
   }
 
   const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState('');
 
       // Call the auth refresh route to generate a new accessToken
     // If the refreshToken is valid, a new accessToken is granted
@@ -64,6 +65,8 @@ const HomePage = ({ loggedInUserId }) => {
   const fetchPosts = async () => {
     let accessToken = localStorage.getItem('accessToken');
     
+    let userId = localStorage.getItem('userId');
+    
     try {
       const response = await fetch(buildPathAPI('api/searchEntries'), {
         method: 'POST',
@@ -72,7 +75,7 @@ const HomePage = ({ loggedInUserId }) => {
           'Authorization': `Bearer ${accessToken}`
         },
         credentials: 'include',  // Include cookies with the request
-        body: JSON.stringify({ search: '' })
+        body: JSON.stringify({ search: '', userId: userId })
       });
 
       if (response.status === 403) {
@@ -90,7 +93,7 @@ const HomePage = ({ loggedInUserId }) => {
                 'Authorization': `Bearer ${newToken}`
             },
             credentials: 'include',
-            body: JSON.stringify({ search: '' })
+            body: JSON.stringify({ search: '', userId: userId })
         });            
     }
 
@@ -150,6 +153,7 @@ const HomePage = ({ loggedInUserId }) => {
           {/* <div className="description">{post.description || 'No description available'}</div> */}
         </div>
       ))}
+      
     </div>
   );
 };

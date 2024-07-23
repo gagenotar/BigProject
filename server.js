@@ -18,6 +18,10 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent
 };
 
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
 // CORS setup
 app.use(cors(corsOptions));
 app.use(bodyParser.json());

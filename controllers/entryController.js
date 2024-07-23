@@ -5,6 +5,7 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const path = require('path');
 
 /* 
 Add entry endpoint 
@@ -26,13 +27,15 @@ exports.addEntry = async (req, res) => {
   const rating = parseInt(req.body.rating, 10); // Ensure rating is an integer
   const date = new Date(); // Add the current date
 
+  const relativeImagePath = req.file ? path.join('uploads', req.file.filename).replace(/\\/g, '/') : null;
+
   const newTrip = { 
     userId: new ObjectId(userId), 
     title, 
     description, 
     location, 
     rating, 
-    image: req.file ? req.file.path : null,
+    image: relativeImagePath,
     date
   };
 
@@ -44,6 +47,7 @@ exports.addEntry = async (req, res) => {
     res.status(500).json({ error: e.toString() });
   }  
 };
+
 
 /* 
 Delete entry endpoint 
