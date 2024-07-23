@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import MyTripsPage from './pages/MyTripsPage';
 import ViewTripPage from './pages/ViewTripPage';
 import EditPage from './pages/EditPage';
-import CreatePage from './pages/CreatePage';
+import CreatePage from './components/NewCreate';
 import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
