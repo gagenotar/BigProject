@@ -1,100 +1,75 @@
-import React from 'react';
-import './Home.css'; 
+import React, { useState, useEffect } from 'react';
+import './Home.css';
 import './Sidebar.css';
-import "./Layout.css";
+import './Layout.css';
 
-const HomePage = () => {
+const HomePage = ({ loggedInUserId }) => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/searchEntries', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ search: '' }), 
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error. Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Fetched posts:", data);
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const redirectToView = (id) => {
+    const path = `/getEntry/${id}?from=home`;
+    window.location.href = path;
+  };
+
   return (
     <div className="pin-container">
-      <div className="card card-large">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
+      {posts.map((post) => (
+        <div className="card card-medium" key={post._id}>
+          <div className='post-top-row'>
+            <div className="profile-details">
+              <div className="username">{post.username || 'Anonymous'}</div>
+              <div className="date">{new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
+            </div>
+            <button 
+              type="button" 
+              className="view-button-home" 
+              onClick={() => redirectToView(post._id)}
+              id='single-view-btn'
+            >
+              <i className="bi bi-eye"></i>
+            </button>
+          </div>
+          <div className="image-row">
+            <img className="post-image" src={`http://localhost:5001/${post.image}`} alt={post.title} />
+          </div>
+          <div className="title-rating">
+            <div className="title">{post.title}</div>
+            <div className="rating">{post.rating ? post.rating : 'No rating yet'}/5</div>
+          </div>
+          <div className="location">
+            {post.location && (
+              <>
+                <div>{post.location.street}, {post.location.city}, {post.location.state}, {post.location.country}</div>
+              </>
+            )}
+          </div>
+          {/* <div className="description">{post.description || 'No description available'}</div> */}
         </div>
-        <div className="image-row">
-          <img className="large-image" src="https://via.placeholder.com/800x400" alt="Large Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Large Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-        <div className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipiumo ewb aqwe sshjdfhmm</div>
-      </div>
-
-      <div className="card card-small">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
-        </div>
-        <div className="image-row">
-          <img className="small-image" src="https://via.placeholder.com/400x200" alt="Small Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Small Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-        <div className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipiumo ewb aqwe sshjdfhmm</div>
-      </div>
-
-      <div className="card card-medium">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
-        </div>
-        <div className="image-row">
-          <img className="medium-image" src="https://via.placeholder.com/600x300" alt="Medium Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Medium Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-        <div className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipiumo ewb aqwe sshjdfhmm</div>
-      </div>
-
-      <div className="card card-large">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
-        </div>
-        <div className="image-row">
-          <img className="large-image" src="https://via.placeholder.com/800x400" alt="Large Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Large Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-      </div>
-
-      <div className="card card-medium">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
-        </div>
-        <div className="image-row">
-          <img className="medium-image" src="https://via.placeholder.com/600x300" alt="Medium Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Medium Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-      </div>
-
-      <div className="card card-small">
-        <div className="profile-details">
-          <img className="user-picture" src="https://via.placeholder.com/50" alt="User" />
-          <div className="username">username</div>
-        </div>
-        <div className="image-row">
-          <img className="small-image" src="https://via.placeholder.com/400x200" alt="Small Post" />
-        </div>
-        <div className="title-rating">
-          <div className="title">Small Post</div>
-        </div>
-        <div className="location">Street 123, City, Country</div>
-      </div>
-
-      <div className="card card-medium"></div>
-      <div className="card card-small"></div>
+      ))}
     </div>
   );
 };
