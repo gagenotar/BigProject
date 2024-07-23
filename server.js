@@ -18,14 +18,13 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent
 };
 
+// CORS setup
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser()); 
 
 // Connect to MongoDB
 const url = process.env.MONGODB_URI;
-const { MongoClient, ObjectId } = require('mongodb')
-const client = new MongoClient(url)
 mongoose.connect(url)
 .then(() => {
   console.log('Connected to MongoDB');
@@ -34,8 +33,6 @@ mongoose.connect(url)
   console.error('Failed to connect to MongoDB', err);
   process.exit(1);
 });
-
-// CORS setup
 
 app.use('/api/auth', authRoutes);
 app.use('/api', entryRoutes);
@@ -200,18 +197,14 @@ app.use('/api', entryRoutes);
 //   }
 // });
 
-// Serve static files from the 'frontend/build' directory in production
-if (process.env.NODE_ENV === 'production') {
+// Serve static files from the build directory
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-  // Set static folder
-  app.use(express.static('frontend/build'));
+// Serve the index.html file on all routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/build/index.html'));
+});
 
-  app.get('*', (req, res) => 
- {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-
-}
 
 // Start the server
 app.listen(PORT, () => {
