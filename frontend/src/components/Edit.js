@@ -4,7 +4,29 @@ import '../components/Create.css';
 import '../components/Layout.css';
 
 const EditPage = () => {
+
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
+    function buildPathAPI(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:5001/' + route;
+        }
+    }
+
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:3000/' + route;
+        }
+    }
+
     const { state } = useLocation();
     const { trip } = state || {}; // Fallback if state is not provided
     const { id } = useParams();
@@ -18,9 +40,37 @@ const EditPage = () => {
     const [previewImage, setPreviewImage] = useState(trip?.image || null);
     const [message, setMessage] = useState('');
 
-    function buildPathAPI(route) {
-        return 'http://localhost:5001/' + route;
-    }
+    // Call the auth refresh route to generate a new accessToken
+    // If the refreshToken is valid, a new accessToken is granted
+    // Else, the refreshToken is invalid and the user is logged out
+    const refreshToken = async () => {
+        try {
+            const response = await fetch(buildPathAPI('api/auth/refresh'), {
+                method: 'GET',
+                credentials: 'include'  // Include cookies with the request
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+        
+            const res = await response.json();
+            console.log('Refresh token response:', res);
+        
+            if (res.accessToken) {
+                console.log('New access token:', res.accessToken);
+                localStorage.setItem('accessToken', res.accessToken);
+                return res.accessToken;
+            } else {
+                console.error('Failed to refresh token:', res.message);
+                throw new Error('Failed to refresh token');
+            }
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            // Redirect to login or handle token refresh failure
+            window.location.href = buildPath('');
+        }
+    };
 
     const handleLocationChange = (e) => {
         const { name, value } = e.target;
@@ -53,10 +103,33 @@ const EditPage = () => {
         }
 
         try {
+            let accessToken = localStorage.getItem('accessToken');
             const response = await fetch(buildPathAPI('api/editEntry/' + id), {
                 method: 'PUT',
                 body: formData,
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                credentials: 'include'  // Include cookies with the request
             });
+
+            if (response.status === 403) {
+                // Token might be expired, try to refresh
+                let newToken = await refreshToken();
+                if (!newToken) {
+                    throw new Error('No token received');
+                }
+    
+                // Retry fetching with the new access token
+                response = await fetch(buildPathAPI('api/editEntry/' + id), {
+                    method: 'PUT',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    credentials: 'include'  // Include cookies with the request
+                });          
+            }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -70,6 +143,11 @@ const EditPage = () => {
             console.error('Error updating entry:', error);
             setMessage('Error updating entry');
         }
+    };
+
+    const redirectTo = (route) => {
+        const path = buildPath(route);
+        window.location.href = path;
     };
 
     return (

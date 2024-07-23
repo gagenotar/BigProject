@@ -120,7 +120,7 @@ const CreatePage = () => {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${newToken}`
                 },
                 credentials: 'include'  // Include cookies with the request
               });            

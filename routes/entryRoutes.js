@@ -17,7 +17,7 @@ router.route('/deleteEntry/:id')
   .delete(entryController.deleteEntryByID);
 
 router.route('/editEntry/:id')
-  .put(entryController.editEntryByID);
+  .put(upload.single('image'), entryController.editEntryByID);
 
 router.route('/getEntry/:id')
   .get(entryController.getEntryByID);

@@ -85,36 +85,55 @@ Response
 */
 exports.editEntryByID = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
+
+    // Validate ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
     const db = mongoose.connection;
 
+    // Debug logging to check incoming request body
+    console.log('Request Body:', req.body);
+    console.log('Request File:', req.file);
+
+    // Handle cases where location or rating might be missing or invalid
     const update = {
-        title: req.body.title,
-        description: req.body.description,
-        location: JSON.parse(req.body.location),
-        rating: parseInt(req.body.rating, 10),
+      title: req.body.title || '', // Default to empty string if not provided
+      description: req.body.description || '', // Default to empty string if not provided
+      location: req.body.location ? JSON.parse(req.body.location) : {}, // Default to empty object if not provided
+      rating: req.body.rating ? parseInt(req.body.rating, 10) : 0, // Default to 0 if not provided
     };
 
     if (req.file) {
-        update.image = req.file.path;
+      update.image = req.file.path;
     }
 
     const filter = { _id: new ObjectId(id) };
     const updateDoc = { $set: update };
 
-    const result = await db.collection('journalEntry').findOneAndUpdate(filter, updateDoc);
+    // Log the filter and updateDoc to verify correct values
+    console.log('Filter:', filter);
+    console.log('Update Document:', updateDoc);
 
-    if (!result) {
+    const result = await db.collection('journalEntry').findOneAndUpdate(filter, updateDoc, { returnOriginal: false });
+
+    // Check if the document was found and updated
+    if (!result.value) {
       return res.status(404).send('Entry not found');
     }
 
+    // Fetch the updated entry
     const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
 
     res.status(200).json(newResult);
   } catch (error) {
+    // Log the error for debugging
+    console.error('Error:', error.message);
     res.status(500).json({ error: error.message });
-  }  
-}
+  }
+};
 
 /* 
 Get entry by ID endpoint 
