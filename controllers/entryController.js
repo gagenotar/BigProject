@@ -1,6 +1,7 @@
 const journalEntry = require('../models/JournalEntry.js');
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb')
+const { ObjectId } = require('mongodb');
+const bcrypt = require('bcrypt');
 
 /* 
 Add entry endpoint 
@@ -196,12 +197,13 @@ exports.profileByID = async (req, res) => {
 exports.updateProfileByID = async (req, res) => {
   const { id } = req.params;
   const { login, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const db = mongoose.connection;
     const result = await db.collection('user').updateOne(
       { _id: new ObjectId(id) },
-      { $set: { login, password } }
+      { $set: { login, password: hashedPassword } }
     );
     if (result.modifiedCount > 0) {
       res.status(200).json({ message: 'Profile updated successfully' });

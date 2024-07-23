@@ -21,7 +21,7 @@ function App() {
         <Route path="/getEntry/:id" element={<ViewTripPage />} />
         <Route path="/editEntry/:id" element={<EditPage />} />
         <Route path="/create" element={<CreatePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
