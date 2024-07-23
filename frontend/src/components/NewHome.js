@@ -12,7 +12,7 @@ const HomePage = ({ loggedInUserId }) => {
     // Else, the refreshToken is invalid and the user is logged out
     const refreshToken = async () => {
       try {
-          const response = await fetch('http://localhost:5001/api/auth/refresh', {
+          let response = await fetch('http://localhost:5001/api/auth/refresh', {
               method: 'GET',
               credentials: 'include'  // Include cookies with the request
           });
@@ -44,7 +44,7 @@ const HomePage = ({ loggedInUserId }) => {
       let accessToken = localStorage.getItem('accessToken');
 
       try {
-        const response = await fetch('http://localhost:5001/api/searchEntries', {
+        let response = await fetch('http://localhost:5001/api/searchEntries', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

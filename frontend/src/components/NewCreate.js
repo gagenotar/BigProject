@@ -97,7 +97,7 @@ const CreatePage = () => {
 
     try {
       let accessToken = localStorage.getItem('accessToken');
-      const response = await fetch(buildPathAPI('api/addEntry'), {
+      let response = await fetch(buildPathAPI('api/addEntry'), {
         method: 'POST',
         body: formData,
         headers: {

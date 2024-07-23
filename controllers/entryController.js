@@ -98,20 +98,32 @@ exports.editEntryByID = async (req, res) => {
 
     const db = mongoose.connection;
 
-    // Debug logging to check incoming request body
+    // Debug logging to check incoming request body and file
     console.log('Request Body:', req.body);
     console.log('Request File:', req.file);
 
-    // Handle cases where location or rating might be missing or invalid
-    const update = {
-      title: req.body.title || '', // Default to empty string if not provided
-      description: req.body.description || '', // Default to empty string if not provided
-      location: req.body.location ? JSON.parse(req.body.location) : {}, // Default to empty object if not provided
-      rating: req.body.rating ? parseInt(req.body.rating, 10) : 0, // Default to 0 if not provided
-    };
+    // Initialize update object
+    const update = {};
+
+    // Conditionally add fields to the update object if they are provided
+    if (req.body.title) {
+      update.title = req.body.title;
+    }
+
+    if (req.body.description) {
+      update.description = req.body.description;
+    }
+
+    if (req.body.location) {
+      update.location = JSON.parse(req.body.location);
+    }
+
+    if (req.body.rating) {
+      update.rating = parseInt(req.body.rating, 10);
+    }
 
     if (req.file) {
-      update.image = req.file.path;
+      update.image = path.join('uploads', req.file.filename).replace(/\\/g, '/');
     }
 
     const filter = { _id: new ObjectId(id) };
@@ -138,6 +150,7 @@ exports.editEntryByID = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 /* 
 Get entry by ID endpoint 

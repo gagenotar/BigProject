@@ -35,7 +35,7 @@ const HomePage = ({ loggedInUserId }) => {
     // Else, the refreshToken is invalid and the user is logged out
     const refreshToken = async () => {
       try {
-          const response = await fetch(buildPathAPI('api/auth/refresh'), {
+          let response = await fetch(buildPathAPI('api/auth/refresh'), {
               method: 'GET',
               credentials: 'include'  // Include cookies with the request
           });
@@ -68,7 +68,7 @@ const HomePage = ({ loggedInUserId }) => {
     let userId = localStorage.getItem('userId');
     
     try {
-      const response = await fetch(buildPathAPI('api/searchEntries'), {
+      let response = await fetch(buildPathAPI('api/searchEntries'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
