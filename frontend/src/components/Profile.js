@@ -34,7 +34,7 @@ const Profile = () => {
   const [newLogin, setNewLogin] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
-  const userId = '6671b214613f5493b0afe5ca';
+  const userId = localStorage.getItem('userId');
 
   // const query = new URLSearchParams(window.location.search);
   // const userId = query.get('userId');
@@ -120,12 +120,13 @@ const Profile = () => {
         window.location.href = path;
     };
 
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
     let accessToken = localStorage.getItem('accessToken');
 
     try {
-      if (newLogin == '')
-        newLogin = profile.login
+      if (newLogin === '')
+        newLogin = profile.login;
       let response = await fetch(buildPathAPI('api/updateProfile/', userId), {
         method: 'PUT',
         headers: {
@@ -165,9 +166,10 @@ const Profile = () => {
       if (response.ok) {
         setMessage('Profile updated successfully!');
         setProfile({ ...profile, login: newLogin, password: newPassword });
-        // redirectTo('profile/', '');
+      } else if (response.status === 400) {
+        setMessage('This login is in use')
       } else {
-        setMessage('Failed to update profile.');
+        setMessage('Bad response');
       }
     } catch (error) {
       setMessage('Error updating profile.');

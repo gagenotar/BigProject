@@ -55,9 +55,7 @@ const Login = () => {
             else {
                 localStorage.setItem('accessToken', res.accessToken);
                 localStorage.setItem('userId', res.id);
-                let userId = localStorage.getItem('userId');
-                setMessage(userId);
-                // redirectTo('home');
+                redirectTo('home');
             }
 
         } catch (e) {

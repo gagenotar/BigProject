@@ -172,7 +172,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                         </div>
                     </div>
                     <div className='col-sm-6'>
-                        {loggedInUserId === trip.userId && (
+                        {localStorage.getItem('userId') === trip.userId && (
                             <div className='row mb-3' id='action-btns'> 
                                 <button 
                                 type='button'
@@ -191,7 +191,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                                 >Done</button>
                             </div>
                         )}
-                        {loggedInUserId !== trip.userId && (
+                        {localStorage.getItem('userId') !== trip.userId && (
                             <div className='row mb-3' id='action-btns'> 
                                 <button 
                                 type='button'
@@ -203,7 +203,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <img className="post-image-view" src={`http://localhost:5001/${trip.image}`} alt={trip.title} />
+                    <img className="post-image-view" src={buildPathAPI('','') + trip.image} alt={trip.title} />
                 </div>
                 <div className='row'>
                     <div className='col-8'>
