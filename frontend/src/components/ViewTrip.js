@@ -203,7 +203,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <img className="post-image-view" src={`http://localhost:5001/${trip.image}`} alt={trip.title} />
+                    <img className="post-image-view" src={buildPathAPI('','') + trip.image} alt={trip.title} />
                 </div>
                 <div className='row'>
                     <div className='col-8'>

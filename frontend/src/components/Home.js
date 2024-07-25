@@ -4,7 +4,24 @@ import './Sidebar.css';
 import './Layout.css';
 
 const HomePage = ({ loggedInUserId }) => {
-    
+  const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+  
+  function buildPathAPI(route) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+      return 'http://localhost:5001/' + route;
+    }
+  }
+
+  function buildPath(route) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+      return 'http://localhost:3000/' + route;
+    }
+  }
+
   const [posts, setPosts] = useState([]);
 
     // Call the auth refresh route to generate a new accessToken
@@ -12,7 +29,7 @@ const HomePage = ({ loggedInUserId }) => {
     // Else, the refreshToken is invalid and the user is logged out
     const refreshToken = async () => {
       try {
-          let response = await fetch('http://localhost:5001/api/auth/refresh', {
+          let response = await fetch(buildPathAPI('api/auth/refresh'), {
               method: 'GET',
               credentials: 'include'  // Include cookies with the request
           });
@@ -44,7 +61,7 @@ const HomePage = ({ loggedInUserId }) => {
       let accessToken = localStorage.getItem('accessToken');
 
       try {
-        let response = await fetch('http://localhost:5001/api/searchEntries', {
+        let response = await fetch(buildPathAPI('api/searchEntries'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -64,7 +81,7 @@ const HomePage = ({ loggedInUserId }) => {
             }
     
             // Retry fetching with the new access token
-            response = await fetch('http://localhost:5001/api/searchEntries', {
+            response = await fetch(buildPathAPI('api/searchEntries'), {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -115,7 +132,7 @@ const HomePage = ({ loggedInUserId }) => {
             </button>
           </div>
           <div className="image-row">
-            <img className="post-image" src={`http://localhost:5001/${post.image}`} alt={post.title} />
+            <img className="post-image" src={buildPathAPI('') + post.image} alt={post.title} />
           </div>
           <div className="title-rating">
             <div className="title">{post.title}</div>

@@ -7,6 +7,7 @@ import '../components/Layout.css';
 
 const EditPage = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+    
     const { state } = useLocation();
     const { trip, from } = state || {}; // Fallback if state is not provided
     const { id } = useParams();
