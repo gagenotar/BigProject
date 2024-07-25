@@ -172,7 +172,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                         </div>
                     </div>
                     <div className='col-sm-6'>
-                        {loggedInUserId === trip.userId && (
+                        {localStorage.getItem('userId') === trip.userId && (
                             <div className='row mb-3' id='action-btns'> 
                                 <button 
                                 type='button'
@@ -191,7 +191,7 @@ const ViewTrip = ({ loggedInUserId }) => {
                                 >Done</button>
                             </div>
                         )}
-                        {loggedInUserId !== trip.userId && (
+                        {localStorage.getItem('userId') !== trip.userId && (
                             <div className='row mb-3' id='action-btns'> 
                                 <button 
                                 type='button'

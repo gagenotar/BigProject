@@ -26,7 +26,7 @@ const MyTrips = ({loggedInUserId}) => {
     }
 
     const [search, setSearch] = useState('');
-    const userId = loggedInUserId; // Use the provided loggedInUserId prop
+    const userId = localStorage.getItem('userId');
 
     const [myEntriesList, setMyEntriesList] = useState([]);
 

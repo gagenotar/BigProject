@@ -1,32 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import '../components/Create.css';
+import '../components/Sidebar.css';
 import '../components/Layout.css';
 
 const EditPage = () => {
-
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
-
-    // Builds a dynamic API uri to use in API calls
-    // Root URL changes depending on production
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
-        }
-    }
-
-    // Builds a dynamic href uri for page redirect
-    // Root URL changes depending on production
-    function buildPath(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:3000/' + route;
-        }
-    }
-
     const { state } = useLocation();
     const { trip } = state || {}; // Fallback if state is not provided
     const { id } = useParams();
@@ -40,9 +20,14 @@ const EditPage = () => {
     const [previewImage, setPreviewImage] = useState(trip?.image || null);
     const [message, setMessage] = useState('');
 
-    // Call the auth refresh route to generate a new accessToken
-    // If the refreshToken is valid, a new accessToken is granted
-    // Else, the refreshToken is invalid and the user is logged out
+    function buildPathAPI(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:5001/' + route;
+        }
+    }
+
     const refreshToken = async () => {
         try {
             const response = await fetch(buildPathAPI('api/auth/refresh'), {
@@ -68,7 +53,7 @@ const EditPage = () => {
         } catch (error) {
             console.error('Error refreshing token:', error);
             // Redirect to login or handle token refresh failure
-            window.location.href = buildPath('');
+            window.location.href = '';
         }
     };
 
@@ -104,7 +89,7 @@ const EditPage = () => {
 
         try {
             let accessToken = localStorage.getItem('accessToken');
-            const response = await fetch(buildPathAPI('api/editEntry/' + id), {
+            let response = await fetch(buildPathAPI('api/editEntry/' + id), {
                 method: 'PUT',
                 body: formData,
                 headers: {
@@ -116,6 +101,7 @@ const EditPage = () => {
             if (response.status === 403) {
                 // Token might be expired, try to refresh
                 let newToken = await refreshToken();
+                console.log("newToken: " + newToken)
                 if (!newToken) {
                     throw new Error('No token received');
                 }
@@ -128,7 +114,7 @@ const EditPage = () => {
                         'Authorization': `Bearer ${newToken}`
                     },
                     credentials: 'include'  // Include cookies with the request
-                });          
+                });        
             }
 
             if (!response.ok) {
@@ -145,13 +131,9 @@ const EditPage = () => {
         }
     };
 
-    const redirectTo = (route) => {
-        const path = buildPath(route);
-        window.location.href = path;
-    };
-
     return (
         <div className="layout">
+            <Sidebar />
             <div className="main-content">
                 <div className="card-centered">
                     <div className="profile-details">
@@ -162,6 +144,7 @@ const EditPage = () => {
                                 <label htmlFor="image">*Replace Picture:</label>
                                 <input
                                     type="file"
+                                    name="image"
                                     id="image"
                                     onChange={handleImageChange}
                                 />

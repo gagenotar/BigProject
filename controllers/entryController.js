@@ -1,5 +1,6 @@
 const journalEntry = require('../models/JournalEntry.js');
 const Trip = require('../models/Trip'); 
+const User = require('../models/User'); 
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
@@ -321,10 +322,18 @@ exports.profileByID = async (req, res) => {
 exports.updateProfileByID = async (req, res) => {
   const { id } = req.params;
   const { login, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-
+  
   try {
     const db = mongoose.connection;
+    
+    // Check if the provided login is unique, excluding the current user
+    const foundUser = await db.collection('user').findOne({ login, _id: { $ne: new ObjectId(id) } });
+    if (foundUser) {
+      console.log(`User with login ${login} already exists`);
+      return res.status(400).json({ message: 'Login must be unique' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const result = await db.collection('user').updateOne(
       { _id: new ObjectId(id) },
       { $set: { login, password: hashedPassword } }
@@ -335,7 +344,7 @@ exports.updateProfileByID = async (req, res) => {
       res.status(404).json({ error: 'User not found' });
     }
   } catch (e) {
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error', error: e.message });
   }
 }
 
