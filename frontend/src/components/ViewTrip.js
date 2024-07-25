@@ -101,7 +101,7 @@ const ViewTrip = ({ loggedInUserId }) => {
 
     useEffect(() => {
         fetchTrip();
-    }, []);
+    }, [id]);
 
     const redirectTo = (route, id) => {
         const path = buildPath(`${route}${id}`);
@@ -109,7 +109,9 @@ const ViewTrip = ({ loggedInUserId }) => {
     };
 
     const handleEdit = () => {
-        redirectTo('editEntry/', id)
+        navigate('/editEntry/' + id, {
+            state: { trip, from: location.pathname }  // Pass trip data and the current path
+        });
     };
 
     const handleDone = () => {
