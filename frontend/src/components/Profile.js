@@ -69,7 +69,7 @@ const Profile = () => {
         } catch (error) {
             console.error('Error refreshing token:', error);
             // Redirect to login or handle token refresh failure
-            // window.location.href = buildPath('');
+            window.location.href = '/';
         }
     };
 
@@ -107,7 +107,7 @@ const Profile = () => {
             const data = await response.json();
             setProfile(data);
         } catch (error) {
-            alert(error.toString());
+            console.log(error.toString());
         }
     };
 
