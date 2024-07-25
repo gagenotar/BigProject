@@ -60,6 +60,10 @@ const HomePage = ({ loggedInUserId }) => {
     const fetchPosts = async () => {
       let accessToken = localStorage.getItem('accessToken');
 
+      if (!accessToken) {
+        accessToken = await refreshToken();
+      }
+
       try {
         let response = await fetch(buildPathAPI('api/searchEntries'), {
           method: 'POST',
