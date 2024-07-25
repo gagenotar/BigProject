@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes.js');
+const appRoutes = require('./routes/entryAppRoutes.js');
 const entryRoutes = require('./routes/entryRoutes.js');
 const PORT = process.env.PORT || 5001;
 
@@ -39,6 +40,7 @@ mongoose.connect(url)
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/app', appRoutes);
 app.use('/api', entryRoutes);
 
 // /* 

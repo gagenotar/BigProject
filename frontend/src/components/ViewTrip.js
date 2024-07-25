@@ -154,6 +154,14 @@ const ViewTrip = ({ loggedInUserId }) => {
 
     if (!trip) return <div>Loading...</div>;
 
+    const formatLocation = (location) => {
+        if (!location) return '';
+    
+        const { street, city, state, country } = location;
+        const locationParts = [street, city, state, country].filter(part => part);
+        return locationParts.join(', ');
+    };
+
     return (
         <div id="view-trip-page">
             <div className='container' id='view-trip-div'>
@@ -213,11 +221,9 @@ const ViewTrip = ({ loggedInUserId }) => {
                 </div>
                 <div className='row'>
                     <div className="col-12 location">
-                        {trip.location && (
                             <div>
-                                {trip.location.street}, {trip.location.city}, {trip.location.state}, {trip.location.country}
+                                {formatLocation(trip.location)}
                             </div>
-                        )}
                     </div>
                 </div>
                 <div className='row'>
