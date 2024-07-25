@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './Home.css'; 
 import './Sidebar.css';
 import "./Layout.css";
@@ -7,6 +7,8 @@ import appLogo from './app-logo.png';
 
 const Sidebar = () => { 
     const [isOpen, setIsOpen] = useState(false);
+    const [pageTitle, setPageTitle] = useState('Login');
+    const location = useLocation();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -15,12 +17,37 @@ const Sidebar = () => {
     const closeSidebar = () => {
         setIsOpen(false);
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem('userToken');
+        window.location.href = '/';
+    };
+
+    useEffect(() => {
+        // Update page title based on current path
+        switch (location.pathname) {
+            case '/mytrips':
+                setPageTitle('My Trips');
+                break;
+            case '/create':
+                setPageTitle('Create');
+                break;
+            case '/profile':
+                setPageTitle('Profile');
+                break;
+            case '/home':
+                setPageTitle('Home');
+                break;
+            default:
+                setPageTitle('Trip Details');
+        }
+    }, [location.pathname]);
     
     return (
     <>
         <div className="top-page">
             <img src={appLogo} className="logo-page" alt="App Logo" />
-            <div className="page-name">Home</div>
+            <div className="page-name">{pageTitle}</div>
         </div>
         <div className="sidebar">
             <nav className={isOpen ? 'open' : ''}>
@@ -57,7 +84,8 @@ const Sidebar = () => {
                             </li>
                             <li className="list">
                                 <Link to="/profile" className="nav-link" onClick={closeSidebar}>
-                                    <img className="my-user-picture" src="https://via.placeholder.com/150" alt="User" />
+                                    <i className="bi bi-person icon user-icon regular-icon"></i>
+                                    <i className="bi bi-person-circle icon user-icon filled-icon" style={{ display: 'none' }}></i>
                                     <span className="link">Profile</span>
                                 </Link>
                             </li>
@@ -65,7 +93,7 @@ const Sidebar = () => {
 
                         <div className="bottom-content">
                             <li className="list">
-                                <Link to="/" className="nav-link" onClick={closeSidebar}>
+                                <Link to="#" className="nav-link" onClick={handleLogout}>
                                     <i className="bi bi-box-arrow-left logout-icon regular-icon"></i>
                                     <i className="bi bi-escape logout-icon filled-icon" style={{ display: 'none' }}></i>
                                     <span className="link logout-link">Logout</span>
