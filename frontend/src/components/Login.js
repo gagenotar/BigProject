@@ -83,41 +83,43 @@ const Login = () => {
                     </div>
                     <div className='row justify-content-center'>
                         <div className='col-sm-10 mb-4'>
-                            <span id='subtitle'><p className='fs-5'>Enter your email to login.</p></span>
+                            <p className='prompt'>Enter your email to log in.</p>
+
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
-                        <div className='header'>Email Address*</div>
-                        <div className='input-group input-group-sm col-sm-12 mb-3'>
+                        <div className="form-floating mb-3">
                             <input 
                                 type="email" 
-                                className="form-control" 
-                                placeholder="Email Address" 
+                                className="form-control form-control-sm" 
+                                id="floatingInput" 
+                                placeholder="name@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required 
                             />
+                            <label htmlFor="floatingInput">Email address*</label>
                         </div>
-                        <div className='header'>Password*</div>
-                        <div className='input-group input-group-sm col-sm-12 mb-3'>
+                        <div className="form-floating">
                             <input 
                                 type="password" 
-                                className="form-control" 
-                                placeholder="Password" 
+                                className="form-control form-control-sm" 
+                                id="floatingPassword" 
+                                placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required 
                             />
+                            <label htmlFor="floatingPassword">Password*</label>
                         </div>
-
-                        <div className='row justify-content-end mb-3'>
-                            <div className='col-sm-6 justify-content-end text-end'>
-                                <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
-                            </div>
+                        {/* <div className='row justify-content-end mb-3'> */}
+                        <div className='forgot-password'>
+                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
                         </div>
+                        {/* </div> */}
                         <div className='row justify-content-center login-button'>
                             <div className='col-sm-12 mb-3'>
-                                <button type="submit" className="btn btn-primary" id='login-btn'>Log in</button>
+                                <button type="submit" className="btn btn-primary w-100" id='login-btn'>Log in</button>
                             </div>
                         </div>
                     </form>
