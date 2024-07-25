@@ -4,16 +4,34 @@
     justify-content: center;
     font-family: 'Inter';
     padding: 0;
+    background-color: #EFEFE6;
 }
 
 #view-trip-div {
-    width: 100vw;
-    margin: auto;
+    width: 90vw; /* Adjust width to fit better within different screen sizes */
+    max-width: 1000px; /* Add a max-width to prevent it from being too wide */
+    height: fit-content;
     margin-top: 100px;
-    padding: 5vh;
-    border-radius: 40px;
-    background: rgba(255, 255, 255, 0.70);
-    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+    padding: 2vh;
+    border-radius: 20px; /* Slightly smaller border radius for a more modern look */
+    background: rgba(255, 255, 255, 0.90); /* Slightly less transparent background */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.10);
+}
+
+#username {
+    margin: 0;
+}
+
+#image-div {
+    display: flex;
+}
+
+.post-image-view {
+    width: 100%; 
+    max-width: 600px;
+    height: auto; 
+    object-fit: cover; 
+    border-radius: 10px; 
 }
 
 #action-btns {
@@ -24,4 +42,19 @@
 #action-btns button {
     max-width: 150px;
     margin-left: 4px;
+}
+
+.entry-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#rating-text {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.location {
+    font-size: 1rem;
+    margin-bottom: 1rem;
 }

@@ -16,14 +16,21 @@
 }
 
 div.card.mb-4 {
-    height: 270px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    border-radius: 10px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    width: 100%; 
 }
 
 img.post-image-mytrips {
-    height: 240px;
-    object-fit: cover;
-    padding: 10px;
-    margin-left: 10px;
+    width: 100%; 
+    max-width: 300px;
+    height: 150px; 
+    object-fit: cover; 
+    border-radius: 10px; 
 }
 
 #my-trips-nav a {
@@ -57,14 +64,9 @@ img.post-image-mytrips {
     flex: 1;
 }
 
-.post-image {
-    border-radius: 20px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
 .entry-title {
     font-weight: bold;
+    font-size: 1.20em;
 }
 
 .mytrips-description {
