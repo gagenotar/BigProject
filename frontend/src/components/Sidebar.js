@@ -6,6 +6,19 @@ import "./Layout.css";
 import appLogo from './app-logo.png';
 
 const Sidebar = () => { 
+
+    const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
+    function buildPathAPI(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        } else {
+            return 'http://localhost:5001/' + route;
+        }
+    }
+
     const [isOpen, setIsOpen] = useState(false);
     const [pageTitle, setPageTitle] = useState('Login');
     const location = useLocation();
@@ -18,8 +31,25 @@ const Sidebar = () => {
         setIsOpen(false);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('userToken');
+
+    
+    const handleLogout = async () => {
+        try {
+            const response = await fetch(buildPathAPI('api/auth/logout'), {
+                method: 'POST',
+                credentials: 'include'  // Include cookies with the request
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+        
+            const res = await response.json();
+            console.log('Refresh token response:', res.message);
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+        }
+        localStorage.clear();
         window.location.href = '/';
     };
 
