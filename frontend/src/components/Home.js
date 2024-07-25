@@ -140,7 +140,7 @@ const HomePage = ({ loggedInUserId }) => {
           </div>
           <div className="title-rating">
             <div className="title">{post.title}</div>
-            <div className="rating">{post.rating ? post.rating : 'No rating yet'}/5</div>
+            <div className="rating">{post.rating ? post.rating : '-'}/5</div>
           </div>
           <div className="location">
             {post.location && (
