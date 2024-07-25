@@ -5,8 +5,8 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import MyTripsPage from './pages/MyTripsPage';
 import ViewTripPage from './pages/ViewTripPage';
-import EditPage from './components/NewEdit';
-import CreatePage from './components/NewCreate';
+import EditPage from './components/Edit';
+import CreatePage from './components/Create';
 import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
