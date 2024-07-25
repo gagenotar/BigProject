@@ -162,18 +162,15 @@ const SignUp = () => {
                             title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
                         />
                     </div>
-                    {/* <div className='col-sm-12 mb-3'>
-                        <button type="submit" class="btn btn-primary" id="signup-btn">Sign Up</button>
-                    </div> */}
-                    <div className='row justify-content-center login-button'>
+                    <div className='row justify-content-center signup-button'>
                         <div className='col-sm-12 mb-3'>
-                            <button type="submit" className="btn btn-primary" id='signup-btn'>Sign Up</button>
+                            <button type="submit" className="btn btn-primary w-100" id='signup-btn'>Sign Up</button>
                         </div>
                     </div>
                 </form>
                 <div className='row justify-content-center'>
                     <div className='col-sm'>
-                        <span class="link-opacity-75-hover" id='login-redirect'><p>Have an account? </p><a href='#' onClick={() => redirectTo('')}>Log in.</a></span>
+                        <span className="link-opacity-75-hover" id='login-redirect'><p>Have an account? </p><a href='#' onClick={() => redirectTo('')}>Log in.</a></span>
                     </div>
                 </div>
             </div>

@@ -83,12 +83,12 @@ const Login = () => {
                     </div>
                     <div className='row justify-content-center'>
                         <div className='col-sm-10 mb-4'>
-                            <p className='prompt'>Enter your email to login.</p>
+                            <p className='prompt'>Enter your email to log in.</p>
 
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
-                        <div class="form-floating mb-3">
+                        <div className="form-floating mb-3">
                             <input 
                                 type="email" 
                                 className="form-control form-control-sm" 
@@ -100,50 +100,26 @@ const Login = () => {
                             />
                             <label for="floatingInput">Email address*</label>
                         </div>
-                        <div class="form-floating">
+                        <div className="form-floating">
                             <input 
                                 type="password" 
                                 className="form-control form-control-sm" 
                                 id="floatingPassword" 
                                 placeholder="Password"
                                 value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required 
-                            />
-                            <label for="floatingPassword">Password*</label>
-                        </div>
-
-                        {/* <div className='header'>Email Address*</div>
-                        <div className='input-group input-group-sm col-sm-12 mb-3'>
-                            <input 
-                                type="email" 
-                                className="form-control" 
-                                placeholder="Email Address" 
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required 
-                            />
-                        </div>
-                        <div className='header'>Password*</div>
-                        <div className='input-group input-group-sm col-sm-12 mb-3'>
-                            <input 
-                                type="password" 
-                                className="form-control" 
-                                placeholder="Password" 
-                                value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required 
                             />
-                        </div> */}
-
-                        <div className='row justify-content-end mb-3'>
-                            <div className='col-sm-6 justify-content-end text-end'>
-                                <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
-                            </div>
+                            <label for="floatingPassword">Password*</label>
                         </div>
+                        {/* <div className='row justify-content-end mb-3'> */}
+                        <div className='forgot-password'>
+                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
+                        </div>
+                        {/* </div> */}
                         <div className='row justify-content-center login-button'>
                             <div className='col-sm-12 mb-3'>
-                                <button type="submit" className="btn btn-primary" id='login-btn'>Log in</button>
+                                <button type="submit" className="btn btn-primary w-100" id='login-btn'>Log in</button>
                             </div>
                         </div>
                     </form>
