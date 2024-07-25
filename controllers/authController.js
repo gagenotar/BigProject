@@ -110,7 +110,7 @@ exports.logout = (req, res) => {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: true,
-    sameSite: 'None',
+    sameSite: 'Lax',
     path: '/'
   });
 

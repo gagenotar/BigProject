@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import './Sidebar.css';
 import './Layout.css';
@@ -51,7 +51,7 @@ const CreatePage = () => {
         } catch (error) {
             console.error('Error refreshing token:', error);
             // Redirect to login or handle token refresh failure
-            window.location.href = buildPath('');
+            window.location.href = '/';
         }
     };
 
@@ -142,6 +142,11 @@ const CreatePage = () => {
     const path = buildPath(route);
     window.location.href = path;
   };
+
+    // Upon the page loading, check for a token
+    useEffect(() => {
+        refreshToken();
+    }, []);
 
   return (
     <div className="layout">

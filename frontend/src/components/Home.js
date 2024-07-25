@@ -52,7 +52,7 @@ const HomePage = ({ loggedInUserId }) => {
       } catch (error) {
           console.error('Error refreshing token:', error);
           // Redirect to login or handle token refresh failure
-          window.location.href = '';
+          window.location.href = '/';
       }
   };
 

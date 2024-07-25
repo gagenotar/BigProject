@@ -105,7 +105,7 @@ const MyTrips = ({loggedInUserId}) => {
             const res = await response.json();
             setMyEntriesList(res);
         } catch (e) {
-            alert(e.toString());
+            console.log(e.toString());
         }
     };
     
