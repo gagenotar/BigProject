@@ -97,54 +97,35 @@ exports.editEntryByID = async (req, res) => {
       return res.status(400).json({ error: 'Invalid ID format' });
     }
 
-    const db = mongoose.connection;
-
-    // Debug logging to check incoming request body and file
-    console.log('Request Body:', req.body);
-    console.log('Request File:', req.file);
-
     // Initialize update object
     const update = {};
 
-    // Conditionally add fields to the update object if they are provided
-    if (req.body.title) {
-      update.title = req.body.title;
-    }
-
-    if (req.body.description) {
-      update.description = req.body.description;
-    }
-
-    if (req.body.location) {
-      update.location = JSON.parse(req.body.location);
-    }
-
-    if (req.body.rating) {
-      update.rating = parseInt(req.body.rating, 10);
-    }
-
-    if (req.file) {
-      update.image = path.join('uploads', req.file.filename).replace(/\\/g, '/');
-    }
+    // Add fields to the update object if they are provided
+    if (req.body.title) update.title = req.body.title;
+    if (req.body.description) update.description = req.body.description;
+    if (req.body.location) update.location = JSON.parse(req.body.location);
+    if (req.body.rating) update.rating = parseInt(req.body.rating, 10);
+    if (req.file) update.image = path.join('uploads', req.file.filename).replace(/\\/g, '/');
 
     const filter = { _id: new ObjectId(id) };
     const updateDoc = { $set: update };
 
-    // Log the filter and updateDoc to verify correct values
+    // Log filter and updateDoc for debugging
     console.log('Filter:', filter);
     console.log('Update Document:', updateDoc);
 
-    const result = await db.collection('journalEntry').findOneAndUpdate(filter, updateDoc, { returnOriginal: false });
+    // Perform update
+    const result = await mongoose.connection.collection('journalEntry').findOneAndUpdate(filter, updateDoc, { returnDocument: 'after' });
 
     // Check if the document was found and updated
-    if (!result.value) {
-      return res.status(404).send('Entry not found');
+    if (!result._id) {
+      return res.status(404).json({ error: 'Entry not found' });
     }
 
     // Fetch the updated entry
-    const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+    const updatedEntry = result;
 
-    res.status(200).json(newResult);
+    res.status(200).json(updatedEntry);
   } catch (error) {
     // Log the error for debugging
     console.error('Error:', error.message);

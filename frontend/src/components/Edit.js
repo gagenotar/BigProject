@@ -8,7 +8,7 @@ import '../components/Layout.css';
 const EditPage = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
     const { state } = useLocation();
-    const { trip } = state || {}; // Fallback if state is not provided
+    const { trip, from } = state || {}; // Fallback if state is not provided
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -124,7 +124,13 @@ const EditPage = () => {
             const data = await response.json();
             console.log('Entry updated successfully:', data);
             setMessage('Trip has been updated');
-            navigate(`/getEntry/${id}`);
+
+            // Redirect back to the previous page
+            if (from) {
+                navigate(from);
+            } else {
+                navigate(`/getEntry/${id}`);
+            }
         } catch (error) {
             console.error('Error updating entry:', error);
             setMessage('Error updating entry');
