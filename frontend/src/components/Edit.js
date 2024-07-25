@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import '../components/Create.css';
@@ -54,7 +54,7 @@ const EditPage = () => {
         } catch (error) {
             console.error('Error refreshing token:', error);
             // Redirect to login or handle token refresh failure
-            window.location.href = '';
+            window.location.href = '/';
         }
     };
 
@@ -137,6 +137,11 @@ const EditPage = () => {
             setMessage('Error updating entry');
         }
     };
+
+    // Upon the page loading, check for a token
+    useEffect(() => {
+        refreshToken();
+    }, []);
 
     return (
         <div className="layout">
