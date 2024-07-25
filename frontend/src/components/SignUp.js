@@ -103,64 +103,74 @@ const SignUp = () => {
                     </div>
                 </div>
                 <form className='row justify-content-center' id='register-form' onSubmit={doSignUp}>
-                    <div className='input-group input-group-sm col-sm-12 mb-3'>
+                    <div className="form-floating mb-3">
                         <input 
                             type="text" 
-                            className="form-control" 
+                            className="form-control form-control-sm" 
+                            id="floatingFirstName" 
                             placeholder="First Name" 
                             value={signUpFirstName}
                             onChange={(e) => setSignUpFirstName(e.target.value)}
-                            maxlength="30"
+                            maxLength="30"
                         />
+                        <label htmlFor="floatingFirstName">First Name</label>
                     </div>
-                    <div className='input-group input-group-sm col-sm-12 mb-3'>
+                    <div className="form-floating mb-3">
                         <input 
                             type="text" 
-                            className="form-control" 
+                            className="form-control form-control-sm" 
+                            id="floatingLastName" 
                             placeholder="Last Name" 
                             value={signUpLastName}
                             onChange={(e) => setSignUpLastName(e.target.value)}
-                            maxlength="30"
+                            maxLength="30"
                         />
+                        <label htmlFor="floatingLastName">Last Name</label>
                     </div>
-                    <div className='input-group input-group-sm col-sm-12 mb-3'>
+                    <div className="form-floating mb-3">
                         <input 
                             type="email" 
-                            className="form-control" 
+                            className="form-control form-control-sm" 
+                            id="floatingEmail" 
                             placeholder="Email Address*" 
                             value={signUpEmail}
                             onChange={(e) => setSignUpEmail(e.target.value)}
-                            maxlength="30"
+                            maxLength="30"
                             required 
-                            pattern="[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[a-z]" 
+                            pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" 
                             title="username@email.com"
                         />
+                        <label htmlFor="floatingEmail">Email Address*</label>
                     </div>
-                    <div className='input-group input-group-sm col-sm-12 mb-3'>
+                    <div className="form-floating mb-3">
                         <input 
                             type="text" 
-                            className="form-control" 
+                            className="form-control form-control-sm" 
+                            id="floatingUsername" 
                             placeholder="Username*" 
                             value={signUpLogin}
                             onChange={(e) => setSignUpLogin(e.target.value)}
-                            maxlength="30"
+                            maxLength="30"
                             required
                             pattern=".{4,}" 
                             title="Username must be at least 4 characters"
                         />
+                        <label htmlFor="floatingUsername">Username*</label>
                     </div>
-                    <div className='input-group input-group-sm col-sm-12 mb-3'>
+                    <div className="form-floating mb-3">
                         <input 
                             type="password" 
-                            className="form-control" 
+                            className="form-control form-control-sm" 
+                            id="floatingPassword" 
                             placeholder="Password*" 
                             value={signUpPassword}
                             onChange={(e) => setSignUpPassword(e.target.value)}
-                            maxlength="30"
+                            maxLength="30"
                             required 
                             pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
                             title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
                         />
+                        <label htmlFor="floatingPassword">Password*</label>
                     </div>
                     <div className='row justify-content-center signup-button'>
                         <div className='col-sm-12 mb-3'>

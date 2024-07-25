@@ -46,7 +46,8 @@
   padding-right: 10px;
 }
 
-#login-div {
+#login-div,
+#register-div {
   max-width: 30vw;
   min-width: 300px;
   padding: 5vh;
@@ -97,7 +98,8 @@ div.row.justify-content-center.signup-button {
   padding: 0;
 }
 
-#login-btn {
+#login-btn,
+#signup-btn {
   padding-top: 12px;
   padding-bottom: 12px;
   border-radius: 6px;
