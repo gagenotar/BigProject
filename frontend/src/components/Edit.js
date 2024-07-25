@@ -7,9 +7,12 @@ import '../components/Layout.css';
 
 const EditPage = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
-    
+    const baseURL = process.env.NODE_ENV === 'production'
+        ? `https://${app_name}.herokuapp.com/`
+        : `http://localhost:5001/`;
+
     const { state } = useLocation();
-    const { trip, from } = state || {}; // Fallback if state is not provided
+    const { trip, from } = state || {};
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -18,31 +21,32 @@ const EditPage = () => {
     const [rating, setRating] = useState(trip?.rating || 0);
     const [description, setDescription] = useState(trip?.description || '');
     const [image, setImage] = useState(null);
-    const [previewImage, setPreviewImage] = useState(trip?.image || null);
+    const [previewImage, setPreviewImage] = useState(trip?.image ? baseURL + trip.image : null);
     const [message, setMessage] = useState('');
 
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
+    useEffect(() => {
+        if (trip?.image) {
+            setPreviewImage(baseURL + trip.image);
         }
+    }, [trip, baseURL]);
+
+    function buildPathAPI(route) {
+        return process.env.NODE_ENV === 'production'
+            ? `https://${app_name}.herokuapp.com/${route}`
+            : `http://localhost:5001/${route}`;
     }
 
     const refreshToken = async () => {
         try {
             const response = await fetch(buildPathAPI('api/auth/refresh'), {
                 method: 'GET',
-                credentials: 'include'  // Include cookies with the request
+                credentials: 'include'
             });
-        
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
-        
             const res = await response.json();
             console.log('Refresh token response:', res);
-        
             if (res.accessToken) {
                 console.log('New access token:', res.accessToken);
                 localStorage.setItem('accessToken', res.accessToken);
@@ -53,14 +57,13 @@ const EditPage = () => {
             }
         } catch (error) {
             console.error('Error refreshing token:', error);
-            // Redirect to login or handle token refresh failure
             window.location.href = '/';
         }
     };
 
     const handleLocationChange = (e) => {
         const { name, value } = e.target;
-        setLocation((prevLocation) => ({
+        setLocation(prevLocation => ({
             ...prevLocation,
             [name]: value,
         }));
@@ -73,12 +76,13 @@ const EditPage = () => {
         reader.onloadend = () => {
             setPreviewImage(reader.result);
         };
-        reader.readAsDataURL(file);
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const formData = new FormData();
         formData.append('title', title);
         formData.append('location', JSON.stringify(location));
@@ -96,26 +100,22 @@ const EditPage = () => {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
                 },
-                credentials: 'include'  // Include cookies with the request
+                credentials: 'include'
             });
 
             if (response.status === 403) {
-                // Token might be expired, try to refresh
                 let newToken = await refreshToken();
-                console.log("newToken: " + newToken)
                 if (!newToken) {
                     throw new Error('No token received');
                 }
-    
-                // Retry fetching with the new access token
                 response = await fetch(buildPathAPI('api/editEntry/' + id), {
                     method: 'PUT',
                     body: formData,
                     headers: {
                         'Authorization': `Bearer ${newToken}`
                     },
-                    credentials: 'include'  // Include cookies with the request
-                });        
+                    credentials: 'include'
+                });
             }
 
             if (!response.ok) {
@@ -126,7 +126,6 @@ const EditPage = () => {
             console.log('Entry updated successfully:', data);
             setMessage('Trip has been updated');
 
-            // Redirect back to the previous page
             if (from) {
                 navigate(from);
             } else {
@@ -138,18 +137,11 @@ const EditPage = () => {
         }
     };
 
-    // Upon the page loading, check for a token
-    useEffect(() => {
-        refreshToken();
-    }, []);
-
     return (
         <div className="layout">
             <Sidebar />
             <div className="main-content">
                 <div className="card-centered">
-                    <div className="profile-details">
-                    </div>
                     <form onSubmit={handleSubmit} className="form-container">
                         <div className="form-row">
                             <div className="form-group image-upload">
