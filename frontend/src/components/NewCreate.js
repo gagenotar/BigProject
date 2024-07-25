@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
+import Sidebar from './Sidebar';
+import './Sidebar.css';
 import './Layout.css';
 import './Create.css';
 
 const CreatePage = () => {
   const app_name = 'journey-journal-cop4331-71e6a1fdae61';
 
-    // Builds a dynamic API uri to use in API calls
-    // Root URL changes depending on production
-    function buildPathAPI(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:5001/' + route;
-        }
+  function buildPathAPI(route) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+      return 'http://localhost:5001/' + route;
     }
+  }
 
-    // Builds a dynamic href uri for page redirect
-    // Root URL changes depending on production
-    function buildPath(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:3000/' + route;
-        }
+  function buildPath(route) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+      return 'http://localhost:3000/' + route;
     }
+  }
 
     // Call the auth refresh route to generate a new accessToken
     // If the refreshToken is valid, a new accessToken is granted
@@ -82,7 +80,7 @@ const CreatePage = () => {
     };
     reader.readAsDataURL(file);
   };
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,7 +97,7 @@ const CreatePage = () => {
 
     try {
       let accessToken = localStorage.getItem('accessToken');
-      const response = await fetch(buildPathAPI('api/addEntry'), {
+      let response = await fetch(buildPathAPI('api/addEntry'), {
         method: 'POST',
         body: formData,
         headers: {
@@ -108,24 +106,23 @@ const CreatePage = () => {
         credentials: 'include'  // Include cookies with the request
       });
 
-          if (response.status === 403) {
-              // Token might be expired, try to refresh
-              let newToken = await refreshToken();
-              if (!newToken) {
-                  throw new Error('No token received');
-              }
-    
-              // Retry fetching with the new access token
-              response = await fetch(buildPathAPI('api/addEntry'), {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${newToken}`
-                },
-                credentials: 'include'  // Include cookies with the request
-              });            
-          }
+      if (response.status === 403) {
+        // Token might be expired, try to refresh
+        let newToken = await refreshToken();
+        if (!newToken) {
+            throw new Error('No token received');
+        }
 
+        // Retry fetching with the new access token
+        response = await fetch(buildPathAPI('api/addEntry'), {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${newToken}`
+            },
+            credentials: 'include'  // Include cookies with the request
+          });          
+    }
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -148,6 +145,7 @@ const CreatePage = () => {
 
   return (
     <div className="layout">
+      <Sidebar />
       <div className="main-content">
         <div className="card-centered">
           <form onSubmit={handleSubmit} className="form-container">
