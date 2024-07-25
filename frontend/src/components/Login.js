@@ -100,7 +100,7 @@ const Login = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required 
                             />
-                            <label for="floatingInput">Email address*</label>
+                            <label htmlFor="floatingInput">Email address*</label>
                         </div>
                         <div className="form-floating">
                             <input 
@@ -112,7 +112,7 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required 
                             />
-                            <label for="floatingPassword">Password*</label>
+                            <label htmlFor="floatingPassword">Password*</label>
                         </div>
                         {/* <div className='row justify-content-end mb-3'> */}
                         <div className='forgot-password'>
