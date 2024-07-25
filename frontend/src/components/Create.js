@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import './Sidebar.css';
 import './Layout.css';
 import './Create.css';
+import "./General.css";
 
 const CreatePage = () => {
   const app_name = 'journey-journal-cop4331-71e6a1fdae61';

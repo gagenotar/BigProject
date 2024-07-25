@@ -11,7 +11,6 @@ html, body {
 .main-content {
   background-color: #EFEFE6;
   flex: 1;
-  padding: 50px;
   display: flex;
   justify-content: center;
   align-items: center;

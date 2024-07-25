@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Home.css';
 import './Sidebar.css';
 import './Layout.css';
+import "./General.css";
 
 const HomePage = ({ loggedInUserId }) => {
   const app_name = 'journey-journal-cop4331-71e6a1fdae61';
@@ -114,7 +115,7 @@ const HomePage = ({ loggedInUserId }) => {
   };
 
   return (
-    <div className="pin-container">
+    <div className="pin-container background">
       {posts.map((post) => (
         <div className="card card-medium" key={post._id}>
           <div className='post-top-row'>
