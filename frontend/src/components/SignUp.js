@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./SignUp.css";
 import "./Login.css";
 
 const SignUp = () => {
-
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
     const navigate = useNavigate();
+    const messageRef = useRef(null);  // Reference for the error message element
 
-    // Builds a dynamic API uri to use in API calls
-    // Root URL changes depending on production
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -18,8 +16,6 @@ const SignUp = () => {
         }
     }
 
-    // Builds a dynamic href uri for page redirect
-    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -33,15 +29,12 @@ const SignUp = () => {
     const [signUpEmail, setSignUpEmail] = useState('');
     const [signUpLogin, setSignUpLogin] = useState('');
     const [signUpPassword, setSignUpPassword] = useState('');
-    const [message,setMessage] = useState('');
+    const [message, setMessage] = useState('');
 
-
-  const doSignUp = async event => 
-    {
+    const doSignUp = async event => {
         event.preventDefault();
 
-        var obj = 
-        {
+        var obj = {
             firstName: signUpFirstName,
             lastName: signUpLastName,
             email: signUpEmail,
@@ -54,8 +47,7 @@ const SignUp = () => {
             const response = await fetch((buildPathAPI('api/auth/register')), {
                 method: 'POST',
                 body: js,
-                headers: 
-                {
+                headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include'
@@ -63,23 +55,25 @@ const SignUp = () => {
             
             var res = JSON.parse(await response.text());
 
-            if (!res.id) {
-                setMessage('Account creation unsuccessful');
-            }
-            else {
+            if (response.status === 400) {
+                if (res.message) {
+                    setMessage(res.message);
+                    messageRef.current.scrollIntoView({ behavior: 'smooth' });  // Scroll to the error message element
+                } else {
+                    setMessage('Bad Request');
+                    messageRef.current.scrollIntoView({ behavior: 'smooth' });  // Scroll to the error message element
+                }
+            } else {
                 localStorage.setItem('accessToken', res.accessToken);
                 setMessage('');
                 redirectTo('email-verification');
             }
-        }
-        catch(e)
-        {
+        } catch(e) {
             alert(e.toString());
             return;
         }
     };
 
-    // Redirect the user 
     const redirectTo = (route) => {
         const path = buildPath(route);
         window.location.href = path;
@@ -184,10 +178,10 @@ const SignUp = () => {
                     </div>
                 </div>
             </div>
+            <span id="signUpResult" ref={messageRef}>{message}</span>
         </div>
-        <span id="signUpResult">{message}</span>
     </div>
-  );
+    );
 };
 
-export default SignUp
+export default SignUp;

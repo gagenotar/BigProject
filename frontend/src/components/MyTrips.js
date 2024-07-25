@@ -26,7 +26,7 @@ const MyTrips = ({loggedInUserId}) => {
     }
 
     const [search, setSearch] = useState('');
-    const userId = loggedInUserId; // Use the provided loggedInUserId prop
+    const userId = localStorage.getItem('userId');
 
     const [myEntriesList, setMyEntriesList] = useState([]);
 
@@ -179,7 +179,7 @@ const MyTrips = ({loggedInUserId}) => {
             <div className='card mb-4' key={index}>
                 <div className='row'>
                     <div className='col-3'>
-                        <img className="post-image-mytrips" src={`http://localhost:5001/${entry.image}`} alt={entry.title} />
+                        <img className="post-image-mytrips" src={buildPathAPI('') + entry.image} alt={entry.title} />
                     </div>
                     <div className='col-9'>
                         <div className='card-body text-start'>
