@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "./MyTrips.css";
+import "./General.css";
 
 const MyTrips = ({ loggedInUserId }) => {
 
