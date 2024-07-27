@@ -183,13 +183,13 @@ const Profile = () => {
         <p><strong>First Name:</strong> {profile.firstName}</p>
         <p><strong>Last Name:</strong> {profile.lastName}</p>
         <p><strong>Email:</strong> {profile.email}</p>
-        <p><strong>Login:</strong> {profile.login}</p>
+        <p><strong>Username:</strong> {profile.login}</p>
         <p><strong>Password:</strong> ******</p>
         
         <form className="profile-form" onSubmit={handleUpdateProfile}>
           <h3>Update Profile</h3>
           <div>
-            <label>New Login:</label>
+            <label>New Username:</label>
             <input
               type="text"
               value={newLogin}

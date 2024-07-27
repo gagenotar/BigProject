@@ -107,8 +107,9 @@ const SignUp = () => {
                             value={signUpFirstName}
                             onChange={(e) => setSignUpFirstName(e.target.value)}
                             maxLength="30"
+                            required 
                         />
-                        <label htmlFor="floatingFirstName">First Name</label>
+                        <label htmlFor="floatingFirstName">First Name*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
@@ -119,8 +120,9 @@ const SignUp = () => {
                             value={signUpLastName}
                             onChange={(e) => setSignUpLastName(e.target.value)}
                             maxLength="30"
+                            required 
                         />
-                        <label htmlFor="floatingLastName">Last Name</label>
+                        <label htmlFor="floatingLastName">Last Name*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
