@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import StarRating from './StarRating';
 
 const ViewTrip = ({ loggedInUserId }) => {
 
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
     
+    // Builds a dynamic API uri to use in API calls
+    // Root URL changes depending on production
     function buildPathAPI(route, id) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route + id;
@@ -14,7 +14,8 @@ const ViewTrip = ({ loggedInUserId }) => {
             return 'http://localhost:5001/' + route + id;
         }
     }
-    
+    // Builds a dynamic href uri for page redirect
+    // Root URL changes depending on production
     function buildPath(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
@@ -28,11 +29,14 @@ const ViewTrip = ({ loggedInUserId }) => {
     const navigate = useNavigate();
     const [trip, setTrip] = useState(null);
 
+    // Call the auth refresh route to generate a new accessToken
+    // If the refreshToken is valid, a new accessToken is granted
+    // Else, the refreshToken is invalid and the user is logged out
     const refreshToken = async () => {
         try {
             const response = await fetch(buildPathAPI('api/auth/refresh', ''), {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include'  // Include cookies with the request
             });
         
             if (!response.ok) {
@@ -40,15 +44,20 @@ const ViewTrip = ({ loggedInUserId }) => {
             }
         
             const res = await response.json();
+            console.log('Refresh token response:', res);
         
             if (res.accessToken) {
+                console.log('New access token:', res.accessToken);
                 localStorage.setItem('accessToken', res.accessToken);
                 return res.accessToken;
             } else {
+                console.error('Failed to refresh token:', res.message);
                 throw new Error('Failed to refresh token');
             }
         } catch (error) {
             console.error('Error refreshing token:', error);
+            // Redirect to login or handle token refresh failure
+            // window.location.href = buildPath('');
         }
     };
 
@@ -62,22 +71,24 @@ const ViewTrip = ({ loggedInUserId }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`
                 },
-                credentials: 'include'
+                credentials: 'include'  // Include cookies with the request
             });
 
             if (response.status === 403) {
+                // Token might be expired, try to refresh
                 let newToken = await refreshToken();
                 if (!newToken) {
                     throw new Error('No token received');
                 }
     
+                // Retry fetching with the new access token
                 response = await fetch(buildPathAPI('api/getEntry/', id), {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${newToken}`
                     },
-                    credentials: 'include'
+                    credentials: 'include'  // Include cookies with the request
                 });            
             }
 
@@ -89,14 +100,16 @@ const ViewTrip = ({ loggedInUserId }) => {
     };
 
     useEffect(() => {
-        refreshToken();
         fetchTrip();
-    }, [id]);
+    }, []);
+
+    const redirectTo = (route, id) => {
+        const path = buildPath(`${route}${id}`);
+        window.location.href = path;
+    };
 
     const handleEdit = () => {
-        navigate('/editEntry/' + id, {
-            state: { trip, from: location.pathname }
-        });
+        redirectTo('editEntry/', id)
     };
 
     const handleDone = () => {
@@ -108,14 +121,8 @@ const ViewTrip = ({ loggedInUserId }) => {
         }
     };
 
-    const [showModal, setShowModal] = useState(false);
-
     const handleDelete = async () => {
-        setShowModal(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        setShowModal(false);
+        alert('Please confirm you want to delete:' + id);
         let accessToken = localStorage.getItem('accessToken');
         try {
             let response = await fetch(buildPathAPI('api/deleteEntry/', id), {
@@ -124,22 +131,24 @@ const ViewTrip = ({ loggedInUserId }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`
                 },
-                credentials: 'include'
+                credentials: 'include'  // Include cookies with the request
             });
 
             if (response.status === 403) {
+                // Token might be expired, try to refresh
                 let newToken = await refreshToken();
                 if (!newToken) {
                     throw new Error('No token received');
                 }
-
+    
+                // Retry fetching with the new access token
                 response = await fetch(buildPathAPI('api/deleteEntry/', id), {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${newToken}`
                     },
-                    credentials: 'include'
+                    credentials: 'include'  // Include cookies with the request
                 });            
             }
 
@@ -150,97 +159,75 @@ const ViewTrip = ({ loggedInUserId }) => {
         }
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-
     if (!trip) return <div>Loading...</div>;
 
-    const formatLocation = (location) => {
-        if (!location) return '';
-    
-        const { street, city, state, country } = location;
-        const locationParts = [street, city, state, country].filter(part => part);
-        return locationParts.join(', ');
-    };
-
     return (
-        <div id="view-trip-page">
-            <div className='container' id='view-trip-div'>
-                <div className='row mb-3 align-items-center'>
-                    <div className='col-md-6'>
-                        <div className='post-details-full'>
-                            {/* <div className='col'> */}
-                                <h5 className='username' id='username'>{trip.username || 'Unknown User'}</h5>
-                            {/* </div> */}
-                            {/* <div className='col text-end'> */}
-                                <small className='text-muted'>{new Date(trip.date).toLocaleDateString()}</small>
-                            {/* </div> */}
+        <div>
+            <div className='container-sm' id='view-trip-div'>
+                <div className='row'>
+                    <div className='col-sm-6'>
+                        <div className='row justify-content-start'>
+                            <div className='col username'>{trip.username || 'Unknown User'}</div> {/* Display owner's name */}
+                            <div className='col text-body-secondary'>Date: {new Date(trip.date).toLocaleDateString()}</div> {/* Display date */}
                         </div>
                     </div>
-                    <div className='col-md-6 text-end'>
-                        {localStorage.getItem('userId') === trip.userId ? (
-                            <div id='action-btns'>
+                    <div className='col-sm-6'>
+                        {localStorage.getItem('userId') === trip.userId && (
+                            <div className='row mb-3' id='action-btns'> 
                                 <button 
-                                    type='button'
-                                    className='btn btn-primary' 
-                                    onClick={handleEdit}
+                                type='button'
+                                className='btn btn-primary' 
+                                onClick={handleEdit}
                                 >Edit</button>
                                 <button 
-                                    type='button'
-                                    className='btn btn-danger'
-                                    onClick={handleDelete}
+                                type='button'
+                                className='btn btn-danger'
+                                onClick={handleDelete}
                                 >Delete</button>
                                 <button 
-                                    type='button'
-                                    className='btn btn-secondary'
-                                    onClick={handleDone}
+                                type='button'
+                                className='btn btn-secondary'
+                                onClick={handleDone}
                                 >Done</button>
                             </div>
-                        ) : (
-                            <div id='action-btns'>
+                        )}
+                        {localStorage.getItem('userId') !== trip.userId && (
+                            <div className='row mb-3' id='action-btns'> 
                                 <button 
-                                    type='button'
-                                    className='btn btn-secondary'
-                                    onClick={handleDone}
+                                type='button'
+                                className='btn btn-secondary'
+                                onClick={handleDone}
                                 >Done</button>
                             </div>
                         )}
                     </div>
                 </div>
-                <div className='row mb-3'>
-                    <div className='col-12 justify-content-center' id='image-div'>
-                        <img className="post-image-view" src={buildPathAPI('', '') + trip.image} alt={'No image available'} />
+                <div className='row'>
+                    <img className="post-image-view" src={buildPathAPI('','') + trip.image} alt={trip.title} />
+                </div>
+                <div className='row'>
+                    <div className='col-8'>
+                        <h3 className='entry-title'>{trip.title}</h3>
+                    </div>
+                    <div className='col-4'>
+                        <div className='row justify-content-end text-end'>
+                            <p id='rating-text'>Rating: {trip.rating}/5</p>
+                        </div>
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='title-rating-row'>
-                        <h3 className='entry-title-full'>{trip.title}</h3>
-                        <StarRating rating={trip.rating} />
-                    </div>
-                    {/* <div className='col-4 text-end'> */}
-                        {/* <p id='rating-text'>Rating: {trip.rating}/5</p> */}
-                        {/* <StarRating rating={trip.rating} /> */}
-                    {/* </div> */}
-                </div>
-                <div className='row'>
-                    <div className="col-12 location-full">
-                            <div>
-                                {formatLocation(trip.location)}
-                            </div>
+                    <div className="location">
+                        {trip.location && (
+                        <>
+                            <div>{trip.location.street}, {trip.location.city}, {trip.location.state}, {trip.location.country}</div>
+                        </>
+                        )}
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='col-12'>
-                        <p>{trip.description}</p>
-                    </div>
+                    <p>{trip.description}</p>
                 </div>
             </div>
-            <ConfirmDeleteModal
-                show={showModal}
-                handleClose={handleCloseModal}
-                handleConfirm={handleConfirmDelete}
-            />
         </div>
     );
 };

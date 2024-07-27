@@ -1,0 +1,82 @@
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #EFEFE6;
+  background-size: cover;
+}
+
+.profile-card {
+  background: white; /* Alabaster */
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 300px;
+  margin-top: 50px;
+}
+
+.profile-card h2 {
+  color: #0C274E; /* Oxford Blue */
+  margin-bottom: 20px;
+}
+
+.profile-card p {
+  margin: 5px 0;
+  font-size: 18px;
+  color: #727272; /* Dim gray */
+}
+
+.profile-card strong {
+  color: #727272; /* Dim gray */
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.profile-form h3 {
+  margin-bottom: 20px;
+  color: #0C274E; /* Oxford Blue */
+}
+
+.profile-form div {
+  margin-bottom: 15px;
+}
+
+.profile-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #727272; /* Dim gray */
+  text-align: left;
+}
+
+.profile-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.profile-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2F7EF7; /* Azure */
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.profile-form button:hover {
+  background-color: #0C274E; /* Oxford Blue */
+}
+
+.message {
+  margin-top: 15px;
+  color: green;
+}

@@ -10,8 +10,8 @@
 #my-trips-div {
     width: 100vw;
     margin: auto;
-    margin-top: 70px;
-    padding: 5vh;
+    margin-top: 50px;
+    padding: 4vh;
     border-radius: 40px;
 }
 
@@ -28,13 +28,14 @@
     border: 1.5px solid #A3A3A3;
     height: 50px;
     border-radius: 5px;
+    margin-bottom: 6px;
 }
 
 div.card.mb-4 {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
-    border-radius: 10px; 
+    border-radius: 20px; 
     overflow: hidden; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     width: 100%; 
@@ -79,7 +80,7 @@ img.post-image-mytrips {
 }
 
 #single-view-btn {
-    max-width: 100px;
+    max-width: 70px;
 }
 
 #rating-text {
@@ -96,18 +97,35 @@ img.post-image-mytrips {
 
 .entry-title {
     font-weight: bold;
-    font-size: 1.20em;
+    font-size: 20px;
 }
 
-.mytrips-description {
+.mytrips-description,
+.entry-title,
+.location-mytrips {
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
 }
 
+.location-mytrips {
+    color: #727272;
+}
+
 .no-posts-message {
     font-size: 30px;
     color: #0C274E;
     font-weight: 600;
+}
+
+.view-button-mytrips {
+    background: none;
+    color: black;
+    font-size: 20px;
+    padding: 0;
+}
+.view-button-mytrips:hover {
+    background: none;
+    color: gray;
 }

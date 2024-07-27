@@ -1,15 +1,15 @@
 import React from 'react';
-import Profile from '../components/Profile.js';
+import Edit from '../components/Edit'; 
 import Sidebar from '../components/Sidebar'; 
 import '../components/Sidebar.css';
 
-const ProfilePage = () => {
+const EditPage = () => {
     return (
         <div>
             <Sidebar />
-            <Profile />
+            <Edit />
         </div>
     );
 };
 
-export default ProfilePage;
+export default EditPage;
