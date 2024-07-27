@@ -4,10 +4,18 @@ const User = require('../models/User.js');
 const { generateTokens } = require('../utils/tokenUtils.js');
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { login, password } = req.body;
 
   try {
-    const foundUser = await User.findOne({ email });
+    // Find a user that has either that email or login
+    const foundUser = await User.findOne(
+      { 
+        $or: [
+          { email: login },
+          { login: login }
+        ]
+      }
+    );
     if (!foundUser) {
       return res.status(401).json({ message: 'Invalid email' });
     }

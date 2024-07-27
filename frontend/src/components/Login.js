@@ -24,7 +24,7 @@ const Login = () => {
         }
     }
 
-    const [email, setEmail] = useState('');
+    const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
@@ -32,7 +32,7 @@ const Login = () => {
         event.preventDefault();
 
         var obj = {
-            email: email,
+            login: login,
             password: password
         };
         var js = JSON.stringify(obj);
@@ -83,22 +83,22 @@ const Login = () => {
                     </div>
                     <div className='row justify-content-center'>
                         <div className='col-sm-10 mb-4'>
-                            <p className='prompt'>Enter your email to log in.</p>
+                            <p className='prompt'>Enter your email or username to log in.</p>
 
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
                         <div className="form-floating mb-3">
                             <input 
-                                type="email" 
+                                type="text" 
                                 className="form-control form-control-sm" 
                                 id="floatingInput" 
                                 placeholder="name@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={login}
+                                onChange={(e) => setLogin(e.target.value)}
                                 required 
                             />
-                            <label htmlFor="floatingInput">Email address*</label>
+                            <label htmlFor="floatingInput">Login*</label>
                         </div>
                         <div className="form-floating">
                             <input 
