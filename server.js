@@ -1,233 +1,105 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { MongoClient } = require('mongodb');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-const path = require('path');
-const PORT = process.env.PORT || 5001;
-
-// Middleware setup
 const app = express();
-app.set('port', (process.env.PORT || 5001))
+const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Connect to MongoDB
-require('dotenv').config();
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const { MongoClient, ObjectId } = require('mongodb');
+const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 client.connect().catch(err => {
   console.error('Failed to connect to MongoDB', err);
   process.exit(1);
 });
 
-// CORS setup
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-  next();
-});
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
-/* 
-Login endpoint 
-
-Request
-{
-  login: String
-  password: String
-}
-Response
-{
-  id: _id
-  firstName: String
-  lastName: String
-}
-*/
-app.post('/api/login', async (req, res) => {
-  const { login, password } = req.body;
-
-  try {
-    const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({ login, password });
-    if (user) {
-      res.status(200).json({ id: user._id, firstName: user.firstName, lastName: user.lastName });
-    } else {
-      res.status(404).json({ error: 'Invalid credentials' });
-    }
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
+client.connect(err => {
+  if (err) {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
   }
+  console.log('Connected to MongoDB');
 });
 
-/* 
-Register endpoint 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
-Request body
-{
-  login: String
-  password: String
-  firstName: String
-  lastName: String
-}
-
-Response
-{
-  _id: new id
-  login: username
-}
-*/
-app.post('/api/register', async (req, res) => {
-  const { login, password, firstName, lastName } = req.body;
-  const newUser = { login, password, firstName, lastName };
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
 
   try {
     const db = client.db('journeyJournal');
-    const result = await db.collection('user').insertOne(newUser);
-    res.status(200).json({_id: result.insertedId, login: login});
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-/* 
-Add entry endpoint 
-
-Request body
-{
-  userId: _id
-  title: String
-  description: String
-  location: String
-}
-
-Response
-{
-  _id: new id
-}
-*/
-app.post('/api/addEntry', async (req, res) => {
-  const { userId, title, description, location} = req.body;
-  const newTrip = { userId, title, description, location};
-
-  try {
-    const db = client.db('journeyJournal');
-    const result = await db.collection('journalEntry').insertOne(newTrip);
-    res.status(200).json({ _id: result.insertedId });
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-/* 
-Delete entry endpoint 
-
-example DEL URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
-
-Request body
-{
-  N/A
-}
-
-Response
-simple message
-*/
-app.delete('/api/deleteEntry/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const db = client.db('journeyJournal');
-    const result = await db.collection('journalEntry').deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount > 0) {
-      res.status(200).send('Entry deleted successfully');
-    } else {
-      res.status(404).send('Entry not found');
-    }
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
-  }
-});
-
-/* 
-Edit entry endpoint 
-
-example PUT URL: http://localhost:5001/api/editEntry/66798781672b94aba8e51609
-
-Request body
-{
-  any info to update
-}
-
-Response
-{
-  updated entry
-}
-*/
-app.put('/api/editEntry/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const db = client.db('journeyJournal');
-
-    const filter = { _id: new ObjectId(id) };
-    const update = { $set: req.body };
-
-    const result = await db.collection('journalEntry').findOneAndUpdate(filter, update);
-    if (!result) {
-      return res.status(404).send('Entry not found');
+    const user = await db.collection('user').findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'User not found' });
     }
 
-    const newResult = await db.collection('journalEntry').findOne({ _id: new ObjectId(id) });
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit code
+    await db.collection('user').updateOne(
+      { email },
+      { $set: { resetPasswordCode: resetCode, resetPasswordExpires: Date.now() + 3600000 } } // Code expires in 1 hour
+    );
 
-    res.status(200).json(newResult);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'JourneyJournal Password Reset Code',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+        Your password reset code is: ${resetCode}\n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
 
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
 
-/* 
-Search entry endpoint 
-
-Request
-search: String
-
-Response
-resuts[]
-*/
-app.post('/api/searchEntry', async (req, res) => {
-  const { search } = req.body;
-
-  try {
-    const db = client.db('journeyJournal');
-    const results = await db.collection('journalEntry').find({ title: { $regex: search, $options: 'i' } }).toArray();
-    res.status(200).json(results);
+        return res.status(500).json({ error: 'Error sending email', details: error.toString() });
+      } else {
+        console.log('Password reset email sent:', info.response);
+        res.status(200).json({ message: 'Password reset code sent to email' });
+      }
+    });
   } catch (e) {
+    console.error('Error in forgot-password endpoint:', e);
     res.status(500).json({ error: e.toString() });
   }
 });
 
-/* 
-Get endpoint (for connection testing)
+app.post('/api/reset-password', async (req, res) => {
+  const { email, code, newPassword } = req.body;
 
-Request
-none
+  try {
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({
+      email,
+      resetPasswordCode: code,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
 
-Response
-'Hello World!'
-*/
-app.get('/', (req, res) => {
-  res.json({message: 'Hello World!'});
-});
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid code or code has expired' });
+    }
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+    await db.collection('user').updateOne(
+      { email },
+      {
+        $set: { password: newPassword },
+        $unset: { resetPasswordCode: "", resetPasswordExpires: "" }
+      }
+    );
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (e) {
+    console.error('Error in reset-password endpoint:', e);
+    res.status(500).json({ error: e.toString() });
+  }
 });
