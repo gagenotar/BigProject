@@ -178,37 +178,44 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <div className="profile-card">
-        <h2>Profile</h2>
+        <h3 className='profile-title'>Profile Details</h3>
         <p><strong>First Name:</strong> {profile.firstName}</p>
         <p><strong>Last Name:</strong> {profile.lastName}</p>
         <p><strong>Email:</strong> {profile.email}</p>
         <p><strong>Username:</strong> {profile.login}</p>
         <p><strong>Password:</strong> ******</p>
         
+        <h3 className='update-prompt'>Update Profile</h3>
         <form className="profile-form" onSubmit={handleUpdateProfile}>
-          <h3>Update Profile</h3>
-          <div>
-            <label>New Username:</label>
-            <input
-              type="text"
-              value={newLogin}
-              pattern=".{4,}" 
-              title="Username must be at least 4 characters"
-              onChange={(e) => setNewLogin(e.target.value)}
-            />
+          <div className="form-floating mb-3">
+              <input 
+                  type="text" 
+                  className="form-control form-control-sm" 
+                  id="floatingInput" 
+                  pattern=".{4,}" 
+                  title="Username must be at least 4 characters"
+                  placeholder="Username"
+                  value={newLogin}
+                  onChange={(e) => setNewLogin(e.target.value)} 
+              />
+              <label htmlFor="floatingInput">New Login:</label>
           </div>
-          <div>
-            <label>New Password:</label>
-            <input
-              type="password"
-              value={newPassword}
-              maxLength="30"
-              pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
-              title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+
+          <div className="form-floating mb-3">
+              <input 
+                  type="password" 
+                  className="form-control form-control-sm" 
+                  id="floatingInput" 
+                  placeholder="Password"
+                  value={newPassword}
+                  maxLength="30"
+                  pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
+                  title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
+                  onChange={(e) => setNewPassword(e.target.value)} 
+              />
+              <label htmlFor="floatingInput">New Password:</label>
           </div>
-          <button type="submit">Update Profile</button>
+          <button type="submit" className='btn btn-primary w-100' id='update-btn'>Update Profile</button>
         </form>
         {message && <p className="message">{message}</p>}
       </div>
