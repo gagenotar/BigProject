@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./SignUp.css";
 import "./Login.css";
-import "./General.css";
 
 const SignUp = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';

@@ -1,6 +1,4 @@
-const journalEntry = require('../models/JournalEntry.js');
 const Trip = require('../models/Trip'); 
-const User = require('../models/User'); 
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
@@ -340,24 +338,4 @@ exports.updateProfileByID = async (req, res) => {
   } catch (e) {
     res.status(500).json({ message: 'Internal Server Error', error: e.message });
   }
-}
-
-// Create a new trip
-exports.createEntry = async (req, res) => {
-  const { title, location, rating, description, image } = req.body;
-
-  try {
-    const newTrip = new Trip({
-      title,
-      location,
-      rating,
-      description,
-      image,
-    });
-
-    await newTrip.save();
-    res.status(201).json({ message: 'Trip created successfully', trip: newTrip });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating trip', error });
-  }  
 }
