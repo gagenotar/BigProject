@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const User = require('../models/User.js');
 const { generateTokens } = require('../utils/tokenUtils.js');
 
@@ -17,12 +18,16 @@ exports.login = async (req, res) => {
       }
     );
     if (!foundUser) {
-      return res.status(401).json({ message: 'Invalid email' });
+      return res.status(401).json({ message: 'Invalid email or username' });
+    }
+
+    if (!foundUser.isVerified) {
+      return res.status(402).json({ message: 'Email not verified. Please check your email for the verification code.' });
     }
 
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
+      return res.status(403).json({ message: 'Invalid password' });
     }
 
     const { accessToken, refreshToken } = generateTokens(foundUser);
@@ -47,23 +52,58 @@ exports.register = async (req, res) => {
   const { firstName, lastName, email, login, password } = req.body;
 
   try {
-    // Before continuing, ensure the email is unique
+    // Check if email is unique
     let foundUser = await User.findOne({ email });
     if (foundUser) {
       return res.status(400).json({ message: 'Email must be unique' });
     }
     
-    // Before continuing, ensure the login is unique
+    // Check if login is unique
     foundUser = await User.findOne({ login });
     if (foundUser) {
       return res.status(400).json({ message: 'Login must be unique' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const newUser = new User({ firstName, lastName, email, login, password: hashedPassword });
+    const newUser = new User({ 
+      firstName, 
+      lastName, 
+      email, 
+      login, 
+      password: hashedPassword, 
+      verificationCode 
+    });
     const result = await newUser.save();
 
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'JourneyJournal Email Verification',
+      text: `Your verification code is: ${verificationCode}`
+    };
+
+    // Send email and await its completion
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(info);
+        }
+      });
+    });
+
+    // Generate tokens
     const { accessToken, refreshToken } = generateTokens(result);
 
     // Set the refresh token in the cookie
@@ -75,12 +115,42 @@ exports.register = async (req, res) => {
     });
 
     // Send access token in the response body
-    res.json({ accessToken, id: result._id });
+    res.status(200).json({ accessToken, id: result._id, email: email, message: 'Verification code sent to email' });
+
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message });
+    }
   }
 };
+
+
+
+exports.verifyCode = async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res.status(400).json({ message: 'Invalid email' });
+      
+    if (user.verificationCode !== code) 
+      return res.status(400).json({ message: 'Invalid code' });
+
+    user.isVerified = true;
+    user.verificationCode = null;
+    await User.updateOne(
+      { email },
+      { $set: { isVerified: true, verificationCode: null } }
+    );
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+}
 
 exports.refreshToken = (req, res) => {
   const cookies = req.cookies;

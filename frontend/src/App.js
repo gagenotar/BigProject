@@ -8,6 +8,7 @@ import ViewTripPage from './pages/ViewTripPage';
 import EditPage from './components/Edit';
 import CreatePage from './components/Create';
 import ProfilePage from './pages/ProfilePage';
+import VerifyEmailPage from './pages/VerifyPage';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/verify" element={<VerifyEmailPage />} />
         <Route path="/home" element={<HomePage loggedInUserId={loggedInUserId} />} />
         <Route path="/mytrips" element={<MyTripsPage loggedInUserId={loggedInUserId} />} />
         <Route path="/getEntry/:id" element={<ViewTripPage loggedInUserId={loggedInUserId} />} />

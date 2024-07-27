@@ -11,7 +11,8 @@
 }
 
 #login-page::before,
-#signup-page::before {
+#signup-page::before,
+#verify-page::before {
   content: "";
   position: absolute; 
   top: 0;
@@ -25,7 +26,8 @@
 }
 
 #login-page > *, 
-#signup-page > *{
+#signup-page > *, 
+#verify-page > *{
   position: relative;
   z-index: 2;
 }

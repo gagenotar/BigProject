@@ -1,0 +1,65 @@
+/* VerifyEmail.css */
+#verify-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    font-family: 'Inter';
+    background: #EFEFE6;
+    position: relative;
+    overflow: hidden;
+}
+
+.verify-code-form {
+  max-width: 50vw;
+  min-width: 300px;
+  padding: 5vh;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.70);
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
+}
+
+.verify-code-form button {
+  width: 100%;
+}
+
+.error-message {
+    color: rgb(255, 78, 78);
+    text-align: center;
+    font-style: normal;
+    font-weight: bold;
+    width: 100%;
+    display: block;
+    padding: 5px;
+}
+
+.success-message {
+  color: rgb(22, 139, 22);
+  text-align: center;
+  font-style: normal;
+  font-weight: bold;
+  width: 100%;
+  display: block;
+  padding: 5px;
+}
+
+.verify-code-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.verify-code-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.verify-code-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}

@@ -49,9 +49,8 @@ const Login = () => {
 
             var res = JSON.parse(await response.text());
 
-            if (!res.id) {
-                setMessage('User/Password combination incorrect');
-            }
+            if (!res.ok)
+                setMessage(res.message);
             else {
                 localStorage.setItem('accessToken', res.accessToken);
                 localStorage.setItem('userId', res.id);
