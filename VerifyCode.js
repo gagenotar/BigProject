@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const VerifyCode = () => {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
-  const history = useHistory();
   const location = useLocation();
 
   useEffect(() => {
@@ -20,9 +19,14 @@ const VerifyCode = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/verify-code', { email, code });
-      alert(response.data.message);
-      history.push('/home');
+      const response = await axios.post('http://localhost:5001/api/verify-code', { email, code });
+      if (response.data.message === 'Email verified successfully') {
+        alert(response.data.message);
+        localStorage.setItem('userId', response.data.userId); // Ensure that response.data contains userId
+        window.location.href = `/home?userId=${response.data.userId}`;
+      } else {
+        setMessage(response.data.message);
+      }
     } catch (error) {
       setMessage(error.response.data.message);
     }
