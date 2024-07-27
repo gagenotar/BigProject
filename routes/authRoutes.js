@@ -8,6 +8,9 @@ router.route('/login')
 router.route('/register')
     .post(authController.register)
 
+router.route('/verify')
+    .post(authController.verifyCode)
+
 router.route('/refresh')
     .get(authController.refreshToken)
 

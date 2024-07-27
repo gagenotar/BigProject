@@ -67,7 +67,7 @@ const SignUp = () => {
             } else {
                 localStorage.setItem('accessToken', res.accessToken);
                 setMessage('');
-                redirectTo('email-verification');
+                window.location.href = `/verify?email=${encodeURIComponent(signUpEmail)}`;
             }
         } catch(e) {
             alert(e.toString());

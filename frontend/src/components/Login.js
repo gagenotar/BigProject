@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./Login.css";
 
 const Login = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+    const navigate = useNavigate();
 
     // Builds a dynamic API uri to use in API calls
-    // Root URL changes depending on production
     function buildPathAPI(route) {
         if (process.env.NODE_ENV === 'production') {
             return 'https://' + app_name + '.herokuapp.com/' + route;
         } else {
             return 'http://localhost:5001/' + route;
-        }
-    }
-
-    // Builds a dynamic href uri for page redirect
-    // Root URL changes depending on production
-    function buildPath(route) {
-        if (process.env.NODE_ENV === 'production') {
-            return 'https://' + app_name + '.herokuapp.com/' + route;
-        } else {
-            return 'http://localhost:3000/' + route;
         }
     }
 
@@ -31,11 +22,11 @@ const Login = () => {
     const doLogin = async (event) => {
         event.preventDefault();
 
-        var obj = {
+        const obj = {
             login: login,
             password: password
         };
-        var js = JSON.stringify(obj);
+        const js = JSON.stringify(obj);
 
         try {
             const response = await fetch(buildPathAPI('api/auth/login'), {
@@ -47,26 +38,20 @@ const Login = () => {
                 credentials: 'include'
             });
 
-            var res = JSON.parse(await response.text());
+            const res = await response.json();
 
-            if (!res.id) {
-                setMessage('User/Password combination incorrect');
-            }
-            else {
+            if (response.ok) {
                 localStorage.setItem('accessToken', res.accessToken);
                 localStorage.setItem('userId', res.id);
-                redirectTo('home');
+                navigate('/home');
+            } else {
+                setMessage(res.message || 'Login failed');
             }
 
         } catch (e) {
-            alert(e.toString());
-            return;
+            console.error(e);
+            setMessage('An error occurred. Please try again.');
         }
-    };
-
-    const redirectTo = (route) => {
-        const path = buildPath(route);
-        window.location.href = path;
     };
 
     return (
@@ -84,7 +69,6 @@ const Login = () => {
                     <div className='row justify-content-center'>
                         <div className='col-sm-10 mb-4'>
                             <p className='prompt'>Enter your email or username to log in.</p>
-
                         </div>
                     </div>
                     <form className='row justify-content-center' id='login-form' onSubmit={doLogin}>
@@ -112,11 +96,9 @@ const Login = () => {
                             />
                             <label htmlFor="floatingPassword" className="label">Password*</label>
                         </div>
-                        {/* <div className='row justify-content-end mb-3'> */}
                         <div className='forgot-password'>
-                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => redirectTo('forgot-password')}>Forgot password?</a></span>
+                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => navigate('/forgot-password')}>Forgot password?</a></span>
                         </div>
-                        {/* </div> */}
                         <div className='row justify-content-center login-button'>
                             <div className='col-sm-12 mb-3'>
                                 <button type="submit" className="btn btn-primary w-100" id='login-btn'>Log in</button>
@@ -125,7 +107,7 @@ const Login = () => {
                     </form>
                     <div className='row justify-content-center signup-prompt'>
                         <div className='col-sm'>
-                            <span className="link-opacity-75-hover" id='signup-redirect'><p>Don't have an account? </p><a href='#' onClick={() => redirectTo('signup')}>Sign up.</a></span>
+                            <span className="link-opacity-75-hover" id='signup-redirect'><p>Don't have an account? </p><a href='#' onClick={() => navigate('/signup')}>Sign up.</a></span>
                         </div>
                     </div>
                 </div>
