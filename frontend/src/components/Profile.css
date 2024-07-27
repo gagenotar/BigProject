@@ -9,7 +9,7 @@
 
 .profile-card {
   background: white; /* Alabaster */
-  padding: 20px;
+  padding: 40px 30px 30px 30px;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -20,16 +20,17 @@
 .profile-card h2 {
   color: #0C274E; /* Oxford Blue */
   margin-bottom: 20px;
+  font-weight: 600;
 }
 
 .profile-card p {
   margin: 5px 0;
   font-size: 18px;
-  color: #727272; /* Dim gray */
+  color: #727272; 
 }
 
 .profile-card strong {
-  color: #727272; /* Dim gray */
+  color: #727272; 
 }
 
 .profile-form {
@@ -45,13 +46,6 @@
 
 .profile-form div {
   margin-bottom: 15px;
-}
-
-.profile-form label {
-  display: block;
-  margin-bottom: 5px;
-  color: #727272; /* Dim gray */
-  text-align: left;
 }
 
 .profile-form input {
@@ -79,4 +73,36 @@
 .message {
   margin-top: 15px;
   color: green;
+}
+
+input.form-control-sm {
+  padding: 0;
+  border: 1.5px solid #A3A3A3;
+  margin: 0;
+}
+
+label {
+  margin-left: 0px;
+}
+
+#update-btn {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.update-prompt,
+.profile-title {
+  color: #0C274E;
+  text-align: center;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.update-prompt {
+  margin-top: 40px;
 }
