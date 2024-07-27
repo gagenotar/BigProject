@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import "./VerifyEmail.css";
 
 const VerifyEmail = () => {
     const app_name = 'journey-journal-cop4331-71e6a1fdae61';
@@ -7,6 +8,7 @@ const VerifyEmail = () => {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -47,15 +49,19 @@ const VerifyEmail = () => {
             var res = JSON.parse(await response.text());
 
             if (response.status === 400) {
+                setIsSuccess(false);
                 if (res.message) {
                     setMessage(res.message);
                 } else {
                     setMessage('Bad Request');
                 }
             } else {
+                setIsSuccess(true);
                 localStorage.setItem('accessToken', res.accessToken);
                 setMessage('Email verified successfully');
-                window.location.href = '/';
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000); // 2-second delay
             }
         } catch(e) {
             console.log(e.toString());
@@ -63,12 +69,15 @@ const VerifyEmail = () => {
         }
     };
 
-      return (
-        <div className="verify-code-container">
-          <form className="verify-code-form" onSubmit={handleSubmit}>
-            <h2>Verify Your Email</h2>
-            {message && <p className="error-message">{message}</p>}
-            <div>
+    return (
+      <div className="verify-code-container">
+        <form className="verify-code-form form-floating mb-3" onSubmit={handleSubmit}>
+          <div className='row justify-content-center'>
+            <div className='col-sm-12 mb-3'>
+              <h2>Verify Your Email</h2>
+            </div>              
+            {message && <p className={isSuccess ? "success-message" : "error-message"}>{message}</p>}
+            <div className='col-sm-12 mb-3 align-items-center'>
               <label>Email:</label>
               <input
                 type="email"
@@ -78,7 +87,7 @@ const VerifyEmail = () => {
                 required
               />
             </div>
-            <div>
+            <div className='col-sm-12 mb-3'>
               <label>Verification Code:</label>
               <input
                 type="text"
@@ -88,10 +97,13 @@ const VerifyEmail = () => {
                 required
               />
             </div>
-            <button type="submit">Verify Code</button>
-          </form>
-        </div>
-      );      
+            <div className='col-sm-12 mb-3'>
+              <button className='btn btn-secondary' type="submit">Verify Code</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    );     
 }
 
 export default VerifyEmail;
