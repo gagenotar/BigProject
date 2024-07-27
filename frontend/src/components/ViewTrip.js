@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import StarRating from './StarRating';
 
 const ViewTrip = ({ loggedInUserId }) => {
 
@@ -168,13 +169,13 @@ const ViewTrip = ({ loggedInUserId }) => {
             <div className='container' id='view-trip-div'>
                 <div className='row mb-3 align-items-center'>
                     <div className='col-md-6'>
-                        <div className='row align-items-center'>
-                            <div className='col'>
+                        <div className='post-details-full'>
+                            {/* <div className='col'> */}
                                 <h5 className='username' id='username'>{trip.username || 'Unknown User'}</h5>
-                            </div>
-                            <div className='col text-end'>
-                                <small className='text-muted'>Date: {new Date(trip.date).toLocaleDateString()}</small>
-                            </div>
+                            {/* </div> */}
+                            {/* <div className='col text-end'> */}
+                                <small className='text-muted'>{new Date(trip.date).toLocaleDateString()}</small>
+                            {/* </div> */}
                         </div>
                     </div>
                     <div className='col-md-6 text-end'>
@@ -209,19 +210,21 @@ const ViewTrip = ({ loggedInUserId }) => {
                 </div>
                 <div className='row mb-3'>
                     <div className='col-12 justify-content-center' id='image-div'>
-                        <img className="post-image-view" src={buildPathAPI('', '') + trip.image} alt={trip.title} />
+                        <img className="post-image-view" src={buildPathAPI('', '') + trip.image} alt={'No image available'} />
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='col-8'>
-                        <h3 className='entry-title'>{trip.title}</h3>
+                    <div className='title-rating-row'>
+                        <h3 className='entry-title-full'>{trip.title}</h3>
+                        <StarRating rating={trip.rating} />
                     </div>
-                    <div className='col-4 text-end'>
-                        <p id='rating-text'>Rating: {trip.rating}/5</p>
-                    </div>
+                    {/* <div className='col-4 text-end'> */}
+                        {/* <p id='rating-text'>Rating: {trip.rating}/5</p> */}
+                        {/* <StarRating rating={trip.rating} /> */}
+                    {/* </div> */}
                 </div>
                 <div className='row'>
-                    <div className="col-12 location">
+                    <div className="col-12 location-full">
                             <div>
                                 {formatLocation(trip.location)}
                             </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "./MyTrips.css";
 import "./General.css";
+import StarRating from './StarRating';
 
 const MyTrips = ({ loggedInUserId }) => {
 
@@ -153,11 +154,19 @@ const MyTrips = ({ loggedInUserId }) => {
     };
 
     const renderCards = (entries) => {
+        if(entries.length === 0) {
+            return (
+                <div>
+                    <p className='no-posts-message'>No posts yet</p>
+                    <p>Go to the <strong>Create</strong> page and post your first adventure.</p>
+                </div>
+            );
+        }
         return entries.map((entry, index) => (
             <div className='card mb-4' key={index}>
                 <div className='row align-items-center'>
                     <div className='col-sm-12 col-md-4 mb-3 mb-md-0'>
-                        <img className="post-image-mytrips" src={buildPathAPI('') + entry.image} alt={entry.title} />
+                        <img className="post-image-mytrips" src={buildPathAPI('') + entry.image} alt={'No image available'} />
                     </div>
                     <div className='col-sm-12 col-md-8'>
                         <div className='card-body text-start'>
@@ -179,11 +188,12 @@ const MyTrips = ({ loggedInUserId }) => {
                                     <h3 className='entry-title'>{entry.title}</h3>
                                 </div>
                                 <div className='col-4 text-end'>
-                                    <p id="rating-text">{entry.rating ? entry.rating : 'No rating yet'}/5</p>
+                                    {/* <p id="rating-text">{entry.rating ? entry.rating : '-'}/5</p> */}
+                                    <StarRating rating={entry.rating} />
                                 </div>
                             </div>
                             <div className='row'>
-                                <div className="col-12 location mb-3">
+                                <div className="col-12 location-mytrips mb-3">
                                     {entry.location && (
                                         <div>{entry.location.street}, {entry.location.city}, {entry.location.state}, {entry.location.country}</div>
                                     )}
@@ -204,17 +214,20 @@ const MyTrips = ({ loggedInUserId }) => {
             <div className='container-sm text-center' id="my-trips-div">
                 <div className='row justify-content-center mb-4' id='my-trips-nav'>
                     <div className='col-sm-12 col-md-6'>
-                        <input 
-                            className='form-control'
-                            type="text" 
-                            id="entry-search-bar" 
-                            placeholder="Search..." 
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                        <div className='search-container'>
+                            <i className="bi bi-search search-icon"></i>
+                            <input 
+                                className='form-control'
+                                type="text" 
+                                id="entry-search-bar" 
+                                placeholder="Search..." 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className='row'>
+                <div className='row justify-content-center'>
                     <div className='col-12'>
                         {renderCards(myEntriesList)}
                     </div>

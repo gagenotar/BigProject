@@ -12,6 +12,7 @@
     max-width: 1000px; /* Add a max-width to prevent it from being too wide */
     height: fit-content;
     margin-top: 100px;
+    margin-bottom: 100px;
     padding: 2vh;
     border-radius: 20px; /* Slightly smaller border radius for a more modern look */
     background: rgba(255, 255, 255, 0.90); /* Slightly less transparent background */
@@ -20,6 +21,12 @@
 
 #username {
     margin: 0;
+}
+
+.title-rating-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 #image-div {
@@ -34,19 +41,26 @@
     border-radius: 10px; 
 }
 
+.post-details-full {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 12px;
+}
+
 #action-btns {
     display: flex;
     justify-content: end;
 }
 
 #action-btns button {
-    max-width: 150px;
+    max-width: 100px;
     margin-left: 4px;
 }
 
-.entry-title {
+.entry-title-full {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
+    font-weight: bold;
 }
 
 #rating-text {
@@ -54,7 +68,29 @@
     margin: 0;
 }
 
-.location {
-    font-size: 1rem;
-    margin-bottom: 1rem;
+.location-full {
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #727272;
+}
+
+.star2-rating {
+    display: flex;
+    direction: row;
+    justify-content: right;
+    padding-top: 6px;
+    margin-left: 20px;
+}
+
+.star2 {
+    font-size: 14px;
+    color: #ddd;
+}
+
+.star2.filled {
+    color: black;
+}
+
+.star2-rating input {
+    display: none;
 }
