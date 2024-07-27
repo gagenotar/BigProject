@@ -53,59 +53,65 @@ const HomePage = ({ loggedInUserId }) => {
       } catch (error) {
           console.error('Error refreshing token:', error);
           // Redirect to login or handle token refresh failure
-          window.location.href = '';
+          window.location.href = '/';
       }
   };
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      let accessToken = localStorage.getItem('accessToken');
+  const fetchPosts = async () => {
+    let accessToken = localStorage.getItem('accessToken');
 
-      try {
-        let response = await fetch(buildPathAPI('api/searchEntries'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            search: '' 
-          }), 
-          credentials: 'include'
-        });
+    if (!accessToken) {
+      accessToken = await refreshToken();
+    }
 
-        if (response.status === 403) {
-            // Token might be expired, try to refresh
-            let newToken = await refreshToken();
-            if (!newToken) {
-                throw new Error('No token received');
-            }
-    
-            // Retry fetching with the new access token
-            response = await fetch(buildPathAPI('api/searchEntries'), {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({
-                  search: '' 
-                }), 
-                credentials: 'include'
-              });           
-        }
+    try {
+      let response = await fetch(buildPathAPI('api/searchEntries'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          search: '' 
+        }), 
+        credentials: 'include'
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error. Status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Fetched posts:", data);
-        setPosts(data);
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
+      if (response.status === 403) {
+          // Token might be expired, try to refresh
+          let newToken = await refreshToken();
+          if (!newToken) {
+              throw new Error('No token received');
+          }
+  
+          // Retry fetching with the new access token
+          response = await fetch(buildPathAPI('api/searchEntries'), {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+              },
+              body: JSON.stringify({
+                search: '' 
+              }), 
+              credentials: 'include'
+            });           
       }
-    };
 
+      if (!response.ok) {
+        throw new Error(`HTTP error. Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Fetched posts:", data);
+      setPosts(data);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+    }
+  };
+
+  // Upon the page loading, check for a token
+  useEffect(() => {
+    refreshToken();
     fetchPosts();
   }, []);
 
@@ -137,7 +143,7 @@ const HomePage = ({ loggedInUserId }) => {
           </div>
           <div className="title-rating">
             <div className="title">{post.title}</div>
-            <div className="rating">{post.rating ? post.rating : 'No rating yet'}/5</div>
+            <div className="rating">{post.rating ? post.rating : '-'}/5</div>
           </div>
           <div className="location">
             {post.location && (

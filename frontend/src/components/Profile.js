@@ -69,7 +69,7 @@ const Profile = () => {
         } catch (error) {
             console.error('Error refreshing token:', error);
             // Redirect to login or handle token refresh failure
-            // window.location.href = buildPath('');
+            window.location.href = '/';
         }
     };
 
@@ -107,11 +107,12 @@ const Profile = () => {
             const data = await response.json();
             setProfile(data);
         } catch (error) {
-            alert(error.toString());
+            console.log(error.toString());
         }
     };
 
     useEffect(() => {
+        refreshToken();
         fetchProfile();
     }, []);
 
@@ -125,8 +126,6 @@ const Profile = () => {
     let accessToken = localStorage.getItem('accessToken');
 
     try {
-      if (newLogin === '')
-        newLogin = profile.login;
       let response = await fetch(buildPathAPI('api/updateProfile/', userId), {
         method: 'PUT',
         headers: {
@@ -165,7 +164,7 @@ const Profile = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage('Profile updated successfully!');
-        setProfile({ ...profile, login: newLogin, password: newPassword });
+        setProfile({ ...profile, login: data.login, password: data.hashedPassword });
       } else if (response.status === 400) {
         setMessage('This login is in use')
       } else {
@@ -183,7 +182,7 @@ const Profile = () => {
         <p><strong>First Name:</strong> {profile.firstName}</p>
         <p><strong>Last Name:</strong> {profile.lastName}</p>
         <p><strong>Email:</strong> {profile.email}</p>
-        <p><strong>Login:</strong> {profile.login}</p>
+        <p><strong>Username:</strong> {profile.login}</p>
         <p><strong>Password:</strong> ******</p>
         
         <h3 className='update-prompt'>Update Profile</h3>
@@ -193,7 +192,9 @@ const Profile = () => {
                   type="text" 
                   className="form-control form-control-sm" 
                   id="floatingInput" 
-                  placeholder="username"
+                  pattern=".{4,}" 
+                  title="Username must be at least 4 characters"
+                  placeholder="Username"
                   value={newLogin}
                   onChange={(e) => setNewLogin(e.target.value)} 
               />
@@ -207,6 +208,9 @@ const Profile = () => {
                   id="floatingInput" 
                   placeholder="Password"
                   value={newPassword}
+                  maxLength="30"
+                  pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
+                  title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
                   onChange={(e) => setNewPassword(e.target.value)} 
               />
               <label htmlFor="floatingInput">New Password:</label>
