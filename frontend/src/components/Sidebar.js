@@ -30,8 +30,6 @@ const Sidebar = () => {
     const closeSidebar = () => {
         setIsOpen(false);
     };
-
-
     
     const handleLogout = async () => {
         try {

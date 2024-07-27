@@ -88,6 +88,7 @@ const ViewTrip = ({ loggedInUserId }) => {
     };
 
     useEffect(() => {
+        refreshToken();
         fetchTrip();
     }, [id]);
 

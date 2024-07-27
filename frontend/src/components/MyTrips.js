@@ -92,6 +92,7 @@ const MyTrips = ({ loggedInUserId }) => {
     };
     
     useEffect(() => {
+        refreshToken();
         fetchEntries();
     }, []);
 
