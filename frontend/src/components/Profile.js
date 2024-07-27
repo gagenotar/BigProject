@@ -125,8 +125,6 @@ const Profile = () => {
     let accessToken = localStorage.getItem('accessToken');
 
     try {
-      if (newLogin === '')
-        newLogin = profile.login;
       let response = await fetch(buildPathAPI('api/updateProfile/', userId), {
         method: 'PUT',
         headers: {
@@ -165,7 +163,7 @@ const Profile = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage('Profile updated successfully!');
-        setProfile({ ...profile, login: newLogin, password: newPassword });
+        setProfile({ ...profile, login: data.login, password: data.hashedPassword });
       } else if (response.status === 400) {
         setMessage('This login is in use')
       } else {
@@ -193,6 +191,8 @@ const Profile = () => {
             <input
               type="text"
               value={newLogin}
+              pattern=".{4,}" 
+              title="Username must be at least 4 characters"
               onChange={(e) => setNewLogin(e.target.value)}
             />
           </div>
@@ -201,6 +201,9 @@ const Profile = () => {
             <input
               type="password"
               value={newPassword}
+              maxLength="30"
+              pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
+              title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
