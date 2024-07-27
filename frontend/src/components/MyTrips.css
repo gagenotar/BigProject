@@ -15,14 +15,30 @@
     border-radius: 40px;
 }
 
+#my-trips-nav {
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    margin-bottom: 4rem;
+}
+
+#my-trips-nav .form-control {
+    width: 100%;
+    border: none;
+    border: 1.5px solid #A3A3A3;
+    height: 50px;
+    border-radius: 5px;
+}
+
 div.card.mb-4 {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
     border-radius: 10px; 
     overflow: hidden; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     width: 100%; 
+    margin: auto; 
 }
 
 img.post-image-mytrips {
@@ -41,9 +57,23 @@ img.post-image-mytrips {
     font-weight: bold;
 }
 
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 25px;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+}
+
 #entry-search-bar {
+    padding-left: 35px;
     margin: 12px;
-    padding: 6px;
     border: 1px solid black;
     border-radius: 5px;
 }
@@ -74,4 +104,10 @@ img.post-image-mytrips {
     display: -webkit-box;
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
+}
+
+.no-posts-message {
+    font-size: 30px;
+    color: #0C274E;
+    font-weight: 600;
 }

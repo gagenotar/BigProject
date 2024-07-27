@@ -153,6 +153,14 @@ const MyTrips = ({ loggedInUserId }) => {
     };
 
     const renderCards = (entries) => {
+        if(entries.length === 0) {
+            return (
+                <div>
+                    <p className='no-posts-message'>No posts yet</p>
+                    <p>Go to the <strong>Create</strong> page and post your first adventure.</p>
+                </div>
+            );
+        }
         return entries.map((entry, index) => (
             <div className='card mb-4' key={index}>
                 <div className='row align-items-center'>
@@ -204,17 +212,20 @@ const MyTrips = ({ loggedInUserId }) => {
             <div className='container-sm text-center' id="my-trips-div">
                 <div className='row justify-content-center mb-4' id='my-trips-nav'>
                     <div className='col-sm-12 col-md-6'>
-                        <input 
-                            className='form-control'
-                            type="text" 
-                            id="entry-search-bar" 
-                            placeholder="Search..." 
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                        <div className='search-container'>
+                            <i className="bi bi-search search-icon"></i>
+                            <input 
+                                className='form-control'
+                                type="text" 
+                                id="entry-search-bar" 
+                                placeholder="Search..." 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className='row'>
+                <div className='row justify-content-center'>
                     <div className='col-12'>
                         {renderCards(myEntriesList)}
                     </div>
