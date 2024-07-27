@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Home.css'; 
 import './Sidebar.css';
-import "./Layout.css";
 import appLogo from './app-logo.png';
 
 const Sidebar = () => { 

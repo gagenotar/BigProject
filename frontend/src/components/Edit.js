@@ -11,10 +11,10 @@ const EditPage = () => {
         ? `https://${app_name}.herokuapp.com/`
         : `http://localhost:5001/`;
 
+    const navigate = useNavigate();
     const { state } = useLocation();
     const { trip, from } = state || {};
     const { id } = useParams();
-    const navigate = useNavigate();
 
     const [title, setTitle] = useState(trip?.title || '');
     const [location, setLocation] = useState(trip?.location || { street: '', city: '', state: '', country: '' });
@@ -23,6 +23,7 @@ const EditPage = () => {
     const [image, setImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(trip?.image ? baseURL + trip.image : null);
     const [message, setMessage] = useState('');
+    const [error, setError] = useState(''); // Added for custom validation
 
     useEffect(() => {
         if (trip?.image) {
@@ -83,6 +84,13 @@ const EditPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Validate required fields
+        if (!title || !rating) {
+            setError('Please fill in all required fields.');
+            return;
+        }
+        setError(''); // Clear any previous error
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('location', JSON.stringify(location));
@@ -124,13 +132,16 @@ const EditPage = () => {
 
             const data = await response.json();
             console.log('Entry updated successfully:', data);
-            setMessage('Trip has been updated');
+            setMessage('Changes saved! Redirecting...');
 
-            if (from) {
-                navigate(from);
-            } else {
-                navigate(`/getEntry/${id}`);
-            }
+            // Add delay before navigation
+            setTimeout(() => {
+                if (from) {
+                    navigate(from);
+                } else {
+                    navigate(`/getEntry/${id}`);
+                }
+            }, 2000); // Delay of 2000 milliseconds (2 seconds)
         } catch (error) {
             console.error('Error updating entry:', error);
             setMessage('Error updating entry');
@@ -164,9 +175,10 @@ const EditPage = () => {
                                 <input
                                     type="text"
                                     value={title}
+                                    required
                                     onChange={(e) => setTitle(e.target.value)}
                                 />
-                                <label>*Location:</label>
+                                <label>Location:</label>
                                 <input
                                     type="text"
                                     name="street"
@@ -219,12 +231,14 @@ const EditPage = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            <label>*Description:</label>
+                            <label>Description:</label>
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        {message && <p style={{ color: 'green' }}>{message}</p>}
                         <button className='save-button' type="submit">Save</button>
                     </form>
                 </div>

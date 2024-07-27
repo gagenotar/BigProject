@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import "./MyTrips.css";
-import "./General.css";
 import StarRating from './StarRating';
 
 const MyTrips = ({ loggedInUserId }) => {
@@ -154,11 +153,19 @@ const MyTrips = ({ loggedInUserId }) => {
     };
 
     const renderCards = (entries) => {
-        if(entries.length === 0) {
+        if(entries.length === 0 && !search) {
             return (
                 <div>
                     <p className='no-posts-message'>No posts yet</p>
                     <p>Go to the <strong>Create</strong> page and post your first adventure.</p>
+                </div>
+            );
+        }
+        else if(entries.length === 0 && search) {
+            return (
+                <div>
+                    <p className='no-posts-message'>No posts found</p>
+                    <p>Try modifying your search.</p>
                 </div>
             );
         }

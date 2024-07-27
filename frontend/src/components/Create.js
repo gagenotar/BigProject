@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './Sidebar.css';
 import './Layout.css';
 import './Create.css';
-import "./General.css";
 
 const CreatePage = () => {
   const app_name = 'journey-journal-cop4331-71e6a1fdae61';
@@ -56,6 +56,9 @@ const CreatePage = () => {
         }
     };
 
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const { from } = state || {};
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState({ street: '', city: '', state: '', country: '' });
   const [rating, setRating] = useState(0);
@@ -63,6 +66,7 @@ const CreatePage = () => {
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState(''); // Added for custom validation
 
   const handleLocationChange = (e) => {
     const { name, value } = e.target;
@@ -84,6 +88,12 @@ const CreatePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate required fields
+    if (!rating) {
+      setError('Please rate your experience.');
+      return;
+    }
+    setError(''); // Clear any previous error
 
     const formData = new FormData();
     formData.append('title', title);
@@ -131,17 +141,19 @@ const CreatePage = () => {
 
       const data = await response.json();
       console.log('Entry added successfully:', data);
-      setMessage('Trip has been added');
-      redirectTo('home');
+      setMessage('Trip has been added! Redirecting...');
+      // Add delay before navigation
+      setTimeout(() => {
+        if (from) {
+          navigate(from);
+        } else {
+          navigate('/home');
+        }
+      }, 2000); // Delay of 2000 milliseconds (2 seconds)
     } catch (error) {
       console.error('Error adding entry:', error);
-      setMessage('Error adding entry');
+      setError('Error adding entry');
     }
-  };
-
-  const redirectTo = (route) => {
-    const path = buildPath(route);
-    window.location.href = path;
   };
 
     // Upon the page loading, check for a token
@@ -162,6 +174,7 @@ const CreatePage = () => {
                   type="file"
                   id="image"
                   onChange={handleImageChange}
+                  required
                 />
                 {previewImage && <img src={previewImage} alt="Preview" className="preview-image" />}
               </div>
@@ -171,8 +184,9 @@ const CreatePage = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  required
                 />
-                <label>*Location:</label>
+                <label>Location:</label>
                 <input
                   type="text"
                   name="street"
@@ -225,12 +239,14 @@ const CreatePage = () => {
               </div>
             </div>
             <div className="form-group">
-              <label>*Description:</label>
+              <label>Description:</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {message && <p style={{ color: 'green' }}>{message}</p>}
             <button className='submit-button' type="submit">Create Post</button>
           </form>
         </div>

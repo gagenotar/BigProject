@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Home.css';
-import './Sidebar.css';
-import './Layout.css';
-import "./General.css";
-import StarRating from './StarRating';
+// import './Sidebar.css';
+// import './Layout.css';
+// import "./General.css";
+// import StarRating from './StarRating';
 
 const HomePage = ({ loggedInUserId }) => {
   const app_name = 'journey-journal-cop4331-71e6a1fdae61';
@@ -122,50 +122,52 @@ const HomePage = ({ loggedInUserId }) => {
   };
 
   return (
-    <div className="pin-container background">
-      {posts.map((post) => (
-        <div className="card card-medium" key={post._id}>
-          <div className='post-top-row'>
-            <div className="profile-details">
-              <div className="username">{post.username || 'Anonymous'}</div>
-              <div className="date">{new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
+    <div id='home-container'>
+      <div className="pin-container">
+        {posts.map((post) => (
+          <div className="card card-medium" key={post._id}>
+            <div className='post-top-row'>
+              <div className="profile-details">
+                <div className="username">{post.username || 'Anonymous'}</div>
+                <div className="date">{new Date(post.date).toLocaleDateString()}</div> {/* Display date */}
+              </div>
+              <button 
+                type="button" 
+                className="view-button-home" 
+                onClick={() => redirectToView(post._id)}
+                id='single-view-btn'
+              >
+                <i className="bi bi-eye"></i>
+              </button>
             </div>
-            <button 
-              type="button" 
-              className="view-button-home" 
-              onClick={() => redirectToView(post._id)}
-              id='single-view-btn'
-            >
-              <i className="bi bi-eye"></i>
-            </button>
-          </div>
-          <div className="image-row">
-            <img className="post-image" src={buildPathAPI('') + post.image} alt={'No image available'} />
-          </div>
-          <div className="title-rating">
-            <div className="title">{post.title}</div>
-            {/* <div className="rating">{post.rating ? post.rating : '-'}/5</div> */}
-            {/* <StarRating rating={post.rating} /> */}
-            <div className="star3-rating">
-              {[...Array(5)].map((star2, index) => {
-                const ratingValue = index + 1;
-                return (
-                  <span key={index} className={ratingValue <= post.rating ? "star3 filled" : "star3"}>
-                    &#9733;
-                  </span>
-                );
-              })}
+            <div className="image-row">
+              <img className="post-image" src={buildPathAPI('') + post.image} alt={'No image available'} />
+            </div>
+            <div className="title-rating">
+              <div className="title">{post.title}</div>
+              {/* <div className="rating">{post.rating ? post.rating : '-'}/5</div> */}
+              {/* <StarRating rating={post.rating} /> */}
+              <div className="star3-rating">
+                {[...Array(5)].map((star2, index) => {
+                  const ratingValue = index + 1;
+                  return (
+                    <span key={index} className={ratingValue <= post.rating ? "star3 filled" : "star3"}>
+                      &#9733;
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="location">
+              {post.location && (
+                <>
+                  <div>{post.location.street}, {post.location.city}, {post.location.state}, {post.location.country}</div>
+                </>
+              )}
             </div>
           </div>
-          <div className="location">
-            {post.location && (
-              <>
-                <div>{post.location.street}, {post.location.city}, {post.location.state}, {post.location.country}</div>
-              </>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

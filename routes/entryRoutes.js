@@ -10,9 +10,6 @@ router.use(verifyJWT);
 router.route('/addEntry')
   .post(upload.single('image'), entryController.addEntry);
 
-router.route('/createEntry')
-  .post(entryController.createEntry);
-
 router.route('/deleteEntry/:id')
   .delete(entryController.deleteEntryByID);
 

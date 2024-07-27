@@ -11,15 +11,31 @@
     margin: 0;
     padding-top: 110px;
     width: 100vw;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--card_width));
     grid-auto-rows: var(--row_increment);
     justify-content: center;
-    background-color: #EFEFE6;
+    position: relative; /* Required for the pseudo-element */
+    background: #EFEFE6;
 }
+
+.pin-container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url(map.jpg) no-repeat center center;
+    background-size: cover;
+    z-index: 1; /* Ensure the image is behind other content */
+    opacity: .1; /* 20% opacity */
+}
+
+.pin-container > *{
+    position: relative;
+    z-index: 2;
+  }
 
 div.card {
     margin: 12px 12px;
