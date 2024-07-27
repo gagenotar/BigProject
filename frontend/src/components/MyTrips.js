@@ -152,6 +152,14 @@ const MyTrips = ({ loggedInUserId }) => {
         window.location.href = path;
     };
 
+    const formatLocation = (location) => {
+        if (!location) return '';
+    
+        const { street, city, state, country } = location;
+        const locationParts = [street, city, state, country].filter(part => part);
+        return locationParts.join(', ');
+    };
+
     const renderCards = (entries) => {
         if(entries.length === 0 && !search) {
             return (
@@ -202,7 +210,10 @@ const MyTrips = ({ loggedInUserId }) => {
                             <div className='row'>
                                 <div className="col-12 location-mytrips mb-3">
                                     {entry.location && (
-                                        <div>{entry.location.street}, {entry.location.city}, {entry.location.state}, {entry.location.country}</div>
+                                        <div>
+                                            {formatLocation(entry.location)}
+                                        </div>
+                                        // <div>{entry.location.street}, {entry.location.city}, {entry.location.state}, {entry.location.country}</div>
                                     )}
                                 </div>
                                 <div className="col-12">
@@ -217,7 +228,7 @@ const MyTrips = ({ loggedInUserId }) => {
     }
 
     return (
-        <div>
+        <div className='my-trips-page'>
             <div className='container-sm text-center' id="my-trips-div">
                 <div className='row justify-content-center mb-4' id='my-trips-nav'>
                     <div className='col-sm-12 col-md-6'>

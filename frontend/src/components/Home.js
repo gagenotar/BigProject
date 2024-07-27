@@ -121,6 +121,13 @@ const HomePage = ({ loggedInUserId }) => {
     window.location.href = path;
   };
 
+  const formatLocation = (location) => {
+    if (!location) return '';
+    const { street, city, state, country } = location;
+    const locationParts = [street, city, state, country].filter(part => part);
+    return locationParts.join(', ');
+  };
+
   return (
     <div id='home-container'>
       <div className="pin-container">
@@ -160,9 +167,9 @@ const HomePage = ({ loggedInUserId }) => {
             </div>
             <div className="location">
               {post.location && (
-                <>
-                  <div>{post.location.street}, {post.location.city}, {post.location.state}, {post.location.country}</div>
-                </>
+                <div>
+                  {formatLocation(post.location)}
+                </div>
               )}
             </div>
           </div>

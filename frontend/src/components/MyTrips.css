@@ -5,14 +5,53 @@
   font-family: Inter, Arial, Helvetica, sans-serif;
   padding: 0;
   background-color: #EFEFE6;
+  position: relative;
+  overflow: hidden;
+  
 }
 
 #my-trips-div {
     width: 100vw;
-    margin: auto;
-    margin-top: 100px;
     padding: 4vh;
+    margin: auto;
+    margin-top: 60px;
     border-radius: 40px;
+}
+
+/* .my-trips-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    padding: 0;
+    background-color: #EFEFE6;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.my-trips-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(map.jpg) no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed; 
+    opacity: 0.2; 
+    z-index: -1;
+} */
+
+#my-trips-div {
+    width: 100vw;
+    padding: 4vh;
+    margin: auto;
+    margin-top: 60px;
+    border-radius: 40px;
+    position: relative;
+    z-index: 2;
 }
 
 #my-trips-nav {
@@ -28,7 +67,7 @@
     border: 1.5px solid #A3A3A3;
     height: 50px;
     border-radius: 5px;
-    margin-bottom: 6px;
+    margin-bottom: 8px; /* increased bottom margin */
 }
 
 div.card.mb-4 {

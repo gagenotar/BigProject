@@ -82,7 +82,9 @@ const Sidebar = () => {
                 <div className="sidebar">
                     <i className="bi bi-list hamburger-menu-sidebar menu-icon" onClick={toggleSidebar}></i>
                     <div className="logo-sidebar">
-                        <img src={appLogo} className="logo-sidebar" alt="App Logo" />
+                        <a href="https://github.com/gagenotar/COP4331-BigProject-Web.git" target="_blank" rel="noopener noreferrer">
+                            <img src={appLogo} className="logo-sidebar" alt="App Logo" />
+                        </a>
                         <div className="logo-name">JOURNEY JOURNAL</div>
                     </div>
 
