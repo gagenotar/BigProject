@@ -136,6 +136,11 @@ const EditPage = () => {
             setMessage('Error updating entry');
         }
     };
+    
+    // Upon the page loading, check for a token
+    useEffect(() => {
+        refreshToken();
+    }, []);
 
     return (
         <div className="layout">

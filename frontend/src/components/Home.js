@@ -57,59 +57,61 @@ const HomePage = ({ loggedInUserId }) => {
       }
   };
 
+  const fetchPosts = async () => {
+    let accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      accessToken = await refreshToken();
+    }
+
+    try {
+      let response = await fetch(buildPathAPI('api/searchEntries'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          search: '' 
+        }), 
+        credentials: 'include'
+      });
+
+      if (response.status === 403) {
+          // Token might be expired, try to refresh
+          let newToken = await refreshToken();
+          if (!newToken) {
+              throw new Error('No token received');
+          }
+  
+          // Retry fetching with the new access token
+          response = await fetch(buildPathAPI('api/searchEntries'), {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+              },
+              body: JSON.stringify({
+                search: '' 
+              }), 
+              credentials: 'include'
+            });           
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error. Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Fetched posts:", data);
+      setPosts(data);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+    }
+  };
+
+  // Upon the page loading, check for a token
   useEffect(() => {
-    const fetchPosts = async () => {
-      let accessToken = localStorage.getItem('accessToken');
-
-      if (!accessToken) {
-        accessToken = await refreshToken();
-      }
-
-      try {
-        let response = await fetch(buildPathAPI('api/searchEntries'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            search: '' 
-          }), 
-          credentials: 'include'
-        });
-
-        if (response.status === 403) {
-            // Token might be expired, try to refresh
-            let newToken = await refreshToken();
-            if (!newToken) {
-                throw new Error('No token received');
-            }
-    
-            // Retry fetching with the new access token
-            response = await fetch(buildPathAPI('api/searchEntries'), {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({
-                  search: '' 
-                }), 
-                credentials: 'include'
-              });           
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error. Status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Fetched posts:", data);
-        setPosts(data);
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
-      }
-    };
-
+    refreshToken();
     fetchPosts();
   }, []);
 

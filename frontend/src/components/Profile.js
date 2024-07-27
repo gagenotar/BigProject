@@ -112,6 +112,7 @@ const Profile = () => {
     };
 
     useEffect(() => {
+        refreshToken();
         fetchProfile();
     }, []);
 
