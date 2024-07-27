@@ -109,7 +109,7 @@ const SignUp = () => {
                             maxLength="30"
                             required 
                         />
-                        <label htmlFor="floatingFirstName">First Name*</label>
+                        <label htmlFor="floatingFirstName" className="label">First Name*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
@@ -122,7 +122,7 @@ const SignUp = () => {
                             maxLength="30"
                             required 
                         />
-                        <label htmlFor="floatingLastName">Last Name*</label>
+                        <label htmlFor="floatingLastName" className="label">Last Name*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
@@ -137,7 +137,7 @@ const SignUp = () => {
                             pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" 
                             title="username@email.com"
                         />
-                        <label htmlFor="floatingEmail">Email Address*</label>
+                        <label htmlFor="floatingEmail" className="label">Email Address*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
@@ -152,7 +152,7 @@ const SignUp = () => {
                             pattern=".{4,}" 
                             title="Username must be at least 4 characters"
                         />
-                        <label htmlFor="floatingUsername">Username*</label>
+                        <label htmlFor="floatingUsername" className="label">Username*</label>
                     </div>
                     <div className="form-floating mb-3">
                         <input 
@@ -167,7 +167,7 @@ const SignUp = () => {
                             pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
                             title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
                         />
-                        <label htmlFor="floatingPassword">Password*</label>
+                        <label htmlFor="floatingPassword" className="label">Password*</label>
                     </div>
                     <div className='row justify-content-center signup-button'>
                         <div className='col-sm-12 mb-3'>
