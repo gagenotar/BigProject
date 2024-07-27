@@ -58,7 +58,7 @@ const VerifyEmail = () => {
             } else {
                 setIsSuccess(true);
                 localStorage.setItem('accessToken', res.accessToken);
-                setMessage('Email verified successfully');
+                setMessage('Email verified successfully! Redirecting...');
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 2000); // 2-second delay
@@ -85,6 +85,7 @@ const VerifyEmail = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                disabled
               />
             </div>
             <div className='col-sm-12 mb-3'>

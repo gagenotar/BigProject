@@ -8,7 +8,7 @@ import ViewTripPage from './pages/ViewTripPage';
 import EditPage from './components/Edit';
 import CreatePage from './components/Create';
 import ProfilePage from './pages/ProfilePage';
-import VerifyEmailPage from './components/VerifyEmail';
+import VerifyEmailPage from './pages/VerifyPage';
 import './App.css';
 
 function App() {
