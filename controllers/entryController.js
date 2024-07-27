@@ -302,27 +302,40 @@ exports.profileByID = async (req, res) => {
 // Update Profile Endpoint
 exports.updateProfileByID = async (req, res) => {
   const { id } = req.params;
-  const { login, password } = req.body;
+  let { login, password } = req.body;
+  let hashedPassword = '';
   
   try {
     const db = mongoose.connection;
     
+    // Assign values to login and password if they have no new value
+    let foundUser = await db.collection('user').findOne({ _id: new ObjectId(id)  });
+    if (!foundUser)
+      res.status(404).json({ error: 'User not found' });
+
+    if (!login)
+      login = foundUser.login
+    if (!password)
+      hashedPassword = foundUser.password
+    else
+      hashedPassword = await bcrypt.hash(password, 10);
+
+    
     // Check if the provided login is unique, excluding the current user
-    const foundUser = await db.collection('user').findOne({ login, _id: { $ne: new ObjectId(id) } });
+    foundUser = await db.collection('user').findOne({ login, _id: { $ne: new ObjectId(id) } });
     if (foundUser) {
       console.log(`User with login ${login} already exists`);
       return res.status(400).json({ message: 'Login must be unique' });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await db.collection('user').updateOne(
       { _id: new ObjectId(id) },
       { $set: { login, password: hashedPassword } }
     );
     if (result.modifiedCount > 0) {
-      res.status(200).json({ message: 'Profile updated successfully' });
+      res.status(200).json({ message: 'Profile updated successfully', login: login, password: hashedPassword });
     } else {
-      res.status(404).json({ error: 'User not found' });
+      res.status(200).json({ message: 'No changes to be made', login: login, password: hashedPassword });
     }
   } catch (e) {
     res.status(500).json({ message: 'Internal Server Error', error: e.message });
