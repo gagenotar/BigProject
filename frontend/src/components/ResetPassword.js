@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import './ResetPassword.css';
 
 const ResetPassword = () => {
+  const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -18,11 +19,36 @@ const ResetPassword = () => {
     }
   }, [location]);
 
+  function buildPathAPI(route) {
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+        return 'http://localhost:5001/' + route;
+    }
+  }
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5001/api/reset-password', { email, code, newPassword });
 
+    var obj = {
+        email: email,
+        code: code,
+        newPassword: newPassword,
+    };
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(buildPathAPI('api/auth/reset-password'), {
+        method: 'POST',
+        body: js,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      var res = JSON.parse(await response.text());
+      
       if (response.status === 200) {
         setMessage('Password reset successful. You can now login with your new password.');
         setEmail('');

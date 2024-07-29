@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './ForgotPassword.css';
+import { json } from 'body-parser';
 
 const ForgotPassword = () => {
+  const app_name = 'journey-journal-cop4331-71e6a1fdae61';
+
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  function buildPathAPI(route) {
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://' + app_name + '.herokuapp.com/' + route;
+    } else {
+        return 'http://localhost:5001/' + route;
+    }
+  }
+
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+
+    var obj = {
+      email: email,
+    };
+    var js = JSON.stringify(obj);
+
     try {
-      const response = await axios.post('http://localhost:5001/api/forgot-password', { email });
+      const response = await fetch((buildPathAPI('api/auth/forgot-password')), {
+        method: 'POST',
+        body: js,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      var res = JSON.parse(await response.text());
 
       if (response.status === 200) {
         setMessage('Password reset code sent. Please check your email.');
