@@ -154,14 +154,14 @@ exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({ email });
+    const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+      return res.status(400).json({ message: 'Invalid email' });
     }
 
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit code
-    await db.collection('user').updateOne(
+    await User.updateOne(
       { email },
       { $set: { resetPasswordCode: resetCode, resetPasswordExpires: Date.now() + 3600000 } } // Code expires in 1 hour
     );
@@ -195,8 +195,7 @@ exports.resetPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
 
   try {
-    const db = client.db('journeyJournal');
-    const user = await db.collection('user').findOne({
+    const user = await User.findOne({
       email,
       resetPasswordCode: code,
       resetPasswordExpires: { $gt: Date.now() }
@@ -206,7 +205,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid code or code has expired' });
     }
 
-    await db.collection('user').updateOne(
+    await User.updateOne(
       { email },
       {
         $set: { password: newPassword },
