@@ -213,10 +213,13 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid code or code has expired' });
     }
 
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     await User.updateOne(
       { email },
       {
-        $set: { password: newPassword },
+        $set: { password: hashedPassword },
         $unset: { resetPasswordCode: "", resetPasswordExpires: "" }
       }
     );
