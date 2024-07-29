@@ -11,12 +11,6 @@ router.route('/register')
 router.route('/verify')
     .post(authController.verifyCode)
 
-router.route('/forgot-password')
-    .post(authController.forgotPassword)
-
-router.route('/reset-password')
-    .post(authController.resetPassword)
-
 router.route('/refresh')
     .get(authController.refreshToken)
 
