@@ -192,7 +192,33 @@ exports.forgotPassword = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
+  const { email, code, newPassword } = req.body;
 
+  try {
+    const db = client.db('journeyJournal');
+    const user = await db.collection('user').findOne({
+      email,
+      resetPasswordCode: code,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid code or code has expired' });
+    }
+
+    await db.collection('user').updateOne(
+      { email },
+      {
+        $set: { password: newPassword },
+        $unset: { resetPasswordCode: "", resetPasswordExpires: "" }
+      }
+    );
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (e) {
+    console.error('Error in reset-password endpoint:', e);
+    res.status(500).json({ error: e.toString() });
+  }
 }
 
 exports.refreshToken = (req, res) => {
