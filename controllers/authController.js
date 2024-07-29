@@ -175,6 +175,14 @@ exports.forgotPassword = async (req, res) => {
         If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
 
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error sending email:', error);
