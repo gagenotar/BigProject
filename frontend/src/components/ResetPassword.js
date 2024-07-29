@@ -78,6 +78,7 @@ const ResetPassword = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             required
+            disabled
           />
         </div>
         <div>
@@ -98,6 +99,9 @@ const ResetPassword = () => {
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Enter new password"
             required
+            maxLength='30'
+            pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
+            title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special symbol (!@#$%^&*)"
           />
         </div>
         <button type="submit">Reset Password</button>

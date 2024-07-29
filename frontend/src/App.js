@@ -22,8 +22,8 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
-        <Route path="/forgot-password" component={ForgotPassword} />
-        <Route path="/reset-password" component={ResetPassword} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={< ResetPassword />} />
         <Route path="/home" element={<HomePage loggedInUserId={loggedInUserId} />} />
         <Route path="/mytrips" element={<MyTripsPage loggedInUserId={loggedInUserId} />} />
         <Route path="/getEntry/:id" element={<ViewTripPage loggedInUserId={loggedInUserId} />} />
