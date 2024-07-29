@@ -8,7 +8,9 @@ const userSchema = new Schema({
   login: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   verificationCode: {type: String, required: false},
-  isVerified: {type: Boolean, default: false}
+  isVerified: {type: Boolean, default: false},
+  resetPasswordCode: {type: String},
+  resetPasswordExpires: {type: Date},
 }, {
   collection: 'user'  // Specify the collection name here
 });
