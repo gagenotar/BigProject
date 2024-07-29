@@ -9,6 +9,8 @@ import EditPage from './components/Edit';
 import CreatePage from './components/Create';
 import ProfilePage from './pages/ProfilePage';
 import VerifyEmailPage from './pages/VerifyPage';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import './App.css';
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
         <Route path="/home" element={<HomePage loggedInUserId={loggedInUserId} />} />
         <Route path="/mytrips" element={<MyTripsPage loggedInUserId={loggedInUserId} />} />
         <Route path="/getEntry/:id" element={<ViewTripPage loggedInUserId={loggedInUserId} />} />
