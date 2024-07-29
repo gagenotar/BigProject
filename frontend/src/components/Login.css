@@ -27,7 +27,7 @@
 
 #login-page > *, 
 #signup-page > *, 
-#verify-page > *{
+#verify-page > * {
   position: relative;
   z-index: 2;
 }
