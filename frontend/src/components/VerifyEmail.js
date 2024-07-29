@@ -27,7 +27,7 @@ const VerifyEmail = () => {
         }
     }
 
-    const handleSubmit = async event => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         var obj = {
