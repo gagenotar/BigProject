@@ -7,6 +7,7 @@ const LoginPage = () => {
         <>
             <div className="container-fluid" id="login-page">
                 <Login />
+                <p>This is the login page</p>
             </div>
         </>
     );
