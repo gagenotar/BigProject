@@ -111,9 +111,9 @@ const Login = () => {
                         </div>
                     </div>
                 </div>
-            </div>
             <div className='my-3' id='loginResult'>
                 <span>{message}</span>
+            </div>
             </div>
         </div>
     );
