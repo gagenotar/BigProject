@@ -12,7 +12,9 @@
 
 #login-page::before,
 #signup-page::before,
-#verify-page::before {
+#verify-page::before,
+#reset-page::before,
+#forgot-page::before {
   content: "";
   position: absolute; 
   top: 0;
@@ -27,7 +29,9 @@
 
 #login-page > *, 
 #signup-page > *, 
-#verify-page > * {
+#verify-page > *, 
+#reset-page > *, 
+#forgot-page > *  {
   position: relative;
   z-index: 2;
 }
