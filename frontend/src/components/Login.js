@@ -97,7 +97,7 @@ const Login = () => {
                             <label htmlFor="floatingPassword" className="label">Password*</label>
                         </div>
                         <div className='forgot-password'>
-                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='#' onClick={() => navigate('/forgot-password')}>Forgot password?</a></span>
+                            <span className="link-opacity-75-hover" id='forgot-pass-redirect'><a href='' onClick={() => navigate('/forgot-password')}>Forgot password?</a></span>
                         </div>
                         <div className='row justify-content-center login-button'>
                             <div className='col-sm-12 mb-3'>
@@ -107,13 +107,13 @@ const Login = () => {
                     </form>
                     <div className='row justify-content-center signup-prompt'>
                         <div className='col-sm'>
-                            <span className="link-opacity-75-hover" id='signup-redirect'><p>Don't have an account? </p><a href='#' onClick={() => navigate('/signup')}>Sign up.</a></span>
+                            <span className="link-opacity-75-hover" id='signup-redirect'><p>Don't have an account? </p><a href='' onClick={() => navigate('/signup')}>Sign up.</a></span>
                         </div>
                     </div>
                 </div>
-            </div>
             <div className='my-3' id='loginResult'>
                 <span>{message}</span>
+            </div>
             </div>
         </div>
     );
